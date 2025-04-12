@@ -1,5 +1,4 @@
-// src/main/java/runix/utils/Helpers.java
-
+// src/main/java/com/runix/utils/Helpers.java
 package com.runix.utils;
 
 public class Helpers {

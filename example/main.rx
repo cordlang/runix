@@ -1,0 +1,27 @@
+# example/main.rx
+
+func fib(n) {
+  if n == 0 {
+    return 0
+  }
+  if n == 1 {
+    return 1
+  }
+  return fib(n - 1) + fib(n - 2)
+}
+
+let n = 7
+let resultado = fib(n)
+print "Fibonacci(" + n + ") = " + resultado
+
+let i = 0
+while i < 5 {
+  print "Contador: " + i
+  let i = i + 1
+}
+
+if resultado > 10 {
+  print "Resultado mayor que 10"
+} else {
+  print "Resultado 10 o menor"
+}

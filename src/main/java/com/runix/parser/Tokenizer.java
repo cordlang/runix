@@ -1,5 +1,4 @@
-// src/main/java/runix/parser/Tokenizer.java
-
+// src/main/java/com/runix/parser/Tokenizer.java
 package com.runix.parser;
 
 import java.util.ArrayList;
@@ -7,7 +6,7 @@ import java.util.List;
 
 public class Tokenizer {
     private final String input;
-    private int position = 0;
+    private int pos = 0;
 
     public Tokenizer(String input) {
         this.input = input;
@@ -15,68 +14,53 @@ public class Tokenizer {
 
     public List<Token> tokenize() {
         List<Token> tokens = new ArrayList<>();
-
-        while (position < input.length()) {
-            char current = input.charAt(position);
-
-            if (Character.isWhitespace(current)) {
-                position++;
+        while (pos < input.length()) {
+            char c = input.charAt(pos);
+            if (Character.isWhitespace(c)) {
+                pos++;
                 continue;
             }
-
-            if (Character.isDigit(current)) {
+            if (Character.isDigit(c)) {
                 tokens.add(readNumber());
                 continue;
             }
-
-            if (Character.isLetter(current)) {
+            if (Character.isLetter(c)) {
                 tokens.add(readIdentifier());
                 continue;
             }
-
-            // Simples operadores por ahora
-            if ("+-*/=(){}".contains(String.valueOf(current))) {
-                tokens.add(new Token(Token.Type.OPERATOR, String.valueOf(current)));
-                position++;
+            if ("+-*/=(){}<>!".indexOf(c) >= 0) {
+                tokens.add(new Token(Token.Type.OPERATOR, String.valueOf(c)));
+                pos++;
                 continue;
             }
-
-            // Comillas para strings
-            if (current == '"') {
+            if (c == '"') {
                 tokens.add(readString());
                 continue;
             }
-
-            position++;
+            pos++;
         }
-
         tokens.add(new Token(Token.Type.EOF, ""));
         return tokens;
     }
 
     private Token readNumber() {
-        StringBuilder sb = new StringBuilder();
-        while (position < input.length() && Character.isDigit(input.charAt(position))) {
-            sb.append(input.charAt(position++));
-        }
-        return new Token(Token.Type.NUMBER, sb.toString());
+        int start = pos;
+        while (pos < input.length() && Character.isDigit(input.charAt(pos))) pos++;
+        return new Token(Token.Type.NUMBER, input.substring(start, pos));
     }
 
     private Token readIdentifier() {
-        StringBuilder sb = new StringBuilder();
-        while (position < input.length() && Character.isLetterOrDigit(input.charAt(position))) {
-            sb.append(input.charAt(position++));
-        }
-        return new Token(Token.Type.IDENTIFIER, sb.toString());
+        int start = pos;
+        while (pos < input.length() && Character.isLetterOrDigit(input.charAt(pos))) pos++;
+        return new Token(Token.Type.IDENTIFIER, input.substring(start, pos));
     }
 
     private Token readString() {
-        position++; // Saltar comilla inicial
-        StringBuilder sb = new StringBuilder();
-        while (position < input.length() && input.charAt(position) != '"') {
-            sb.append(input.charAt(position++));
-        }
-        position++; // Saltar comilla final
-        return new Token(Token.Type.STRING, sb.toString());
+        pos++; // skip opening "
+        int start = pos;
+        while (pos < input.length() && input.charAt(pos) != '"') pos++;
+        String val = input.substring(start, pos);
+        pos++; // skip closing "
+        return new Token(Token.Type.STRING, val);
     }
 }
