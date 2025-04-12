@@ -9,5 +9,5 @@ public class CallExpr implements Expr {
     public CallExpr(String callee, List<Expr> arguments) {
         this.callee = callee; this.arguments = arguments;
     }
-    public <R> R accept(NodeVisitor<R> v) { return v.visit(this); }
+    public <R> R accept(NodeVisitor<R> v) { return v.visitCallExpr(this); }
 }

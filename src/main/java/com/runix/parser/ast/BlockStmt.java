@@ -15,6 +15,6 @@ public class BlockStmt extends ASTNode {
 
     @Override
     public <R> R accept(NodeVisitor<R> visitor) {
-        return visitor.visit(this);
+        return visitor.visitBlockStmt(this);
     }
 }

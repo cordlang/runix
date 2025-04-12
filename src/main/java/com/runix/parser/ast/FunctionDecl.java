@@ -3,7 +3,7 @@ package com.runix.parser.ast;
 
 import java.util.List;
 
-public class FunctionDecl extends ASTNode {
+public class FunctionDecl implements Node {
     public final String name;
     public final List<String> params;
     public final BlockStmt body;
@@ -16,6 +16,6 @@ public class FunctionDecl extends ASTNode {
 
     @Override
     public <R> R accept(NodeVisitor<R> v) {
-        return v.visit(this);
+        return v.visitFunctionDecl(this);
     }
 }

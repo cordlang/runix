@@ -2,17 +2,18 @@ package com.runix.parser.ast;
 
 /** Visitor para recorrer el AST */
 public interface NodeVisitor<R> {
-    R visitReturnStmt(ReturnStmt stmt);
-    R visit(Program node);
-    R visit(FunctionDecl node);
-    R visit(VarDecl node);
-    R visit(PrintStmt node);
-    R visit(IfStmt node);
-    R visit(WhileStmt node);
-    R visit(ExpressionStmt node);
-    R visit(BinaryExpr node);
-    R visit(LiteralExpr node);
-    R visit(VariableExpr node);
-    R visit(CallExpr node);
-    R visit(BlockStmt node); // Agregamos este método
+    R visitProgram(Program node);
+    R visitFunctionDecl(FunctionDecl node);
+    R visitVarDecl(VarDecl node);
+    R visitReturnStmt(ReturnStmt node);
+    R visitPrintStmt(PrintStmt node);
+    R visitIfStmt(IfStmt node);
+    R visitWhileStmt(WhileStmt node);
+    R visitForStmt(ForStmt node);
+    R visitExpressionStmt(ExpressionStmt node);
+    R visitBlockStmt(BlockStmt node);
+    R visitBinaryExpr(BinaryExpr node);
+    R visitLiteralExpr(LiteralExpr node);
+    R visitVariableExpr(VariableExpr node);
+    R visitCallExpr(CallExpr node);
 }

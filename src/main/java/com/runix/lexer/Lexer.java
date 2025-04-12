@@ -70,13 +70,19 @@ public class Lexer {
     private Token number() {
         StringBuilder number = new StringBuilder();
         while (position < input.length() && Character.isDigit(currentChar)) {
-            number.append(currentChar);
+            number.append((char)currentChar);
             position++;
             if (position < input.length()) {
                 currentChar = input.charAt(position);
             }
         }
-        return new Token(Token.Type.NUMBER, number.toString());
+        try {
+            // Convertir el string a número
+            int num = Integer.parseInt(number.toString());
+            return new Token(Token.Type.NUMBER, String.valueOf(num));
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Número inválido: " + number.toString());
+        }
     }
 
     private Token identifier() {

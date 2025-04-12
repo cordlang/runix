@@ -8,5 +8,5 @@ public class BinaryExpr implements Expr {
     public BinaryExpr(Expr left, String operator, Expr right) {
         this.left = left; this.operator = operator; this.right = right;
     }
-    public <R> R accept(NodeVisitor<R> v) { return v.visit(this); }
+    public <R> R accept(NodeVisitor<R> v) { return v.visitBinaryExpr(this); }
 }

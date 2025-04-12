@@ -7,6 +7,7 @@ import java.util.List;
 import com.runix.lexer.Lexer;
 import com.runix.lexer.Token;
 import com.runix.parser.Parser;
+import com.runix.parser.ast.Program;
 import com.runix.Evaluator.Evaluator;
 
 public class Main {
@@ -17,13 +18,12 @@ public class Main {
         }
 
         String filename = args[0];
-        
+
         try {
-            // Read the file
+            // --- Leer el archivo ---
             List<String> lines = Files.readAllLines(
-                Paths.get(filename),
-                StandardCharsets.UTF_8
-            );
+                    Paths.get(filename),
+                    StandardCharsets.UTF_8);
             StringBuilder code = new StringBuilder();
             for (String line : lines) {
                 code.append(line).append("\n");
@@ -32,7 +32,7 @@ public class Main {
             System.out.println(code.toString());
             System.out.println("=== Fin del código ===\n");
 
-            // Lexer
+            // --- Lexer ---
             Lexer lexer = new Lexer(code.toString());
             List<Token> tokens = lexer.tokenize();
             System.out.println("\n=== Tokens ===");
@@ -40,18 +40,24 @@ public class Main {
                 System.out.println(token);
             }
             System.out.println("=== Fin de tokens ===\n");
-            
-            // Parser
+
+            // --- Parser ---
             Parser parser = new Parser(tokens);
             System.out.println("\n=== Parseando ===");
-            var ast = parser.parse();
+            Program ast = parser.parse();
             System.out.println("=== Parse completado ===\n");
-            
-            // Evaluator
+
+            // --- Evaluator ---
             Evaluator evaluator = new Evaluator();
             System.out.println("\n=== Evaluando ===");
-            evaluator.visit(ast);
+            Object result = evaluator.evaluate(ast);
             System.out.println("=== Evaluación completada ===\n");
+
+            if (result != null) {
+                System.out.println("=== Resultado final ===");
+                System.out.println(result.toString());
+            }
+
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             e.printStackTrace();

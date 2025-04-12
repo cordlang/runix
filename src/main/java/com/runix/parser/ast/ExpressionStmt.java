@@ -4,5 +4,5 @@ package com.runix.parser.ast;
 public class ExpressionStmt implements Node {
     public final Expr expression;
     public ExpressionStmt(Expr expression) { this.expression = expression; }
-    public <R> R accept(NodeVisitor<R> v) { return v.visit(this); }
+    public <R> R accept(NodeVisitor<R> v) { return v.visitExpressionStmt(this); }
 }

@@ -1,4 +1,3 @@
-// src/main/java/com/runix/parser/Parser.java
 package com.runix.parser;
 
 import java.util.ArrayList;
@@ -22,17 +21,22 @@ import com.runix.parser.ast.CallExpr;
 import com.runix.parser.ast.ExpressionStmt;
 
 public class Parser {
-    private final List<Token> tokens;
+    private final Token[] tokens;
     private int pos = 0;
-
+    private final int end;
+    
     public Parser(List<Token> tokens) {
-        this.tokens = tokens;
+        this.tokens = tokens.toArray(new Token[0]);
+        this.end = tokens.size();
     }
 
     public Program parse() {
         List<Node> statements = new ArrayList<>();
-        while (!match(Token.Type.EOF)) {
-            statements.add(declaration());
+        while (!isAtEnd()) {
+            Node decl = declaration();
+            if (decl != null) {
+                statements.add(decl);
+            }
         }
         return new Program(statements);
     }
@@ -229,92 +233,85 @@ public class Parser {
     }
 
     // Métodos auxiliares
-    private void synchronize() {
-        advance();
-        while (!isAtEnd()) {
-            if (previous().type == Token.Type.OPERATOR && ";".equals(previous().value)) return;
-            
-            switch (peek().type) {
-                case IDENTIFIER:
-                    if (peek().value.equals("func") || peek().value.equals("let") || 
-                        peek().value.equals("const") || peek().value.equals("if") || 
-                        peek().value.equals("while") || peek().value.equals("print") || 
-                        peek().value.equals("return")) {
-                        return;
-                    }
-                    break;
-                case OPERATOR:
-                    if (peek().value.equals(";")) return;
-                    break;
-                case EOF:
-                    return;
-                case NUMBER:
-                case STRING:
-                    break;
-            }
-            advance();
-        }
-    }
-
     private boolean match(Token.Type type, String... vals) {
-        if (check(type, vals)) {
-            advance();
-            return true;
-        }
-        return false;
+        if (isAtEnd()) return false;
+        Token t = peek();
+        if (t.type != type) return false;
+        if (vals.length > 0 && !contains(vals, t.value)) return false;
+        pos++;
+        return true;
     }
 
-    private boolean match(Token.Type type) {
-        if (check(type)) {
-            advance();
-            return true;
-        }
-        return false;
-    }
-
-    private boolean matchIdentifier(String val) {
-        if (check(Token.Type.IDENTIFIER, val)) {
-            advance();
-            return true;
+    private boolean contains(String[] array, String value) {
+        for (String s : array) {
+            if (s.equals(value)) return true;
         }
         return false;
     }
 
     private Token consume(Token.Type type, String val) {
-        if (check(type, val)) return advance();
-        throw new RuntimeException("Se esperaba '" + val + "' en " + peek());
+        if (isAtEnd()) throw new RuntimeException("Se esperaba '" + val + "' pero se llegó al final");
+        Token t = peek();
+        if (t.type != type || !t.value.equals(val)) {
+            throw new RuntimeException("Se esperaba '" + val + "' pero encontré '" + t.value + "'");
+        }
+        return advance();
     }
 
     private Token consume(Token.Type type) {
-        if (check(type)) return advance();
-        throw new RuntimeException("Se esperaba token de tipo " + type + " en " + peek());
+        if (isAtEnd()) throw new RuntimeException("Se esperaba token de tipo " + type + " pero se llegó al final");
+        Token t = peek();
+        if (t.type != type) {
+            throw new RuntimeException("Se esperaba token de tipo " + type + " pero encontré " + t.type);
+        }
+        return advance();
+    }
+
+    private Token advance() {
+        return tokens[pos++];
+    }
+
+    private boolean isAtEnd() {
+        return pos >= end;
+    }
+
+    private Token peek() {
+        return tokens[pos];
+    }
+
+    private Token previous() {
+        return tokens[pos - 1];
+    }
+
+    private void synchronize() {
+        advance();
+        while (!isAtEnd()) {
+            if (previous().type == Token.Type.OPERATOR && previous().value.equals(";")) return;
+            if (previous().type == Token.Type.IDENTIFIER) {
+                String val = previous().value;
+                if (val.equals("func") || val.equals("let") || val.equals("const") || 
+                    val.equals("if") || val.equals("while") || val.equals("print") || 
+                    val.equals("return")) {
+                    return;
+                }
+            }
+            advance();
+        }
+    }
+
+    private boolean matchIdentifier(String val) {
+        if (isAtEnd()) return false;
+        Token t = peek();
+        if (t.type != Token.Type.IDENTIFIER || !t.value.equals(val)) return false;
+        pos++;
+        return true;
     }
 
     private boolean check(Token.Type type, String... vals) {
         if (isAtEnd()) return false;
         Token t = peek();
         if (t.type != type) return false;
-        if (vals.length == 0) return true;
-        for (String v : vals) {
-            if (t.value.equals(v)) return true;
-        }
-        return false;
-    }
-
-    private Token advance() {
-        if (!isAtEnd()) pos++;
-        return previous();
-    }
-
-    private boolean isAtEnd() {
-        return peek().type == Token.Type.EOF;
-    }
-
-    private Token peek() {
-        return tokens.get(pos);
-    }
-
-    private Token previous() {
-        return tokens.get(pos - 1);
+        if (vals.length > 0 && !contains(vals, t.value)) return false;
+        return true;
     }
 }

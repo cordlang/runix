@@ -7,5 +7,5 @@ public class VarDecl implements Node {
     public VarDecl(String name, Expr initializer) {
         this.name = name; this.initializer = initializer;
     }
-    public <R> R accept(NodeVisitor<R> v) { return v.visit(this); }
+    public <R> R accept(NodeVisitor<R> v) { return v.visitVarDecl(this); }
 }

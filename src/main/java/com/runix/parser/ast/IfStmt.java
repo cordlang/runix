@@ -9,5 +9,5 @@ public class IfStmt implements Node {
         this.thenBranch = thenBranch;
         this.elseBranch = elseBranch;
     }
-    public <R> R accept(NodeVisitor<R> v) { return v.visit(this); }
+    public <R> R accept(NodeVisitor<R> v) { return v.visitIfStmt(this); }
 }
