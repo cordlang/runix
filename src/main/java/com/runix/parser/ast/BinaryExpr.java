@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/BinaryExpr.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 public class BinaryExpr implements Expr {
     public final Expr left;

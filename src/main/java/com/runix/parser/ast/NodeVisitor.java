@@ -1,8 +1,8 @@
-// src/main/java/com/runix/ast/NodeVisitor.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 /** Visitor para recorrer el AST */
 public interface NodeVisitor<R> {
+    R visitReturnStmt(ReturnStmt stmt);
     R visit(Program node);
     R visit(FunctionDecl node);
     R visit(VarDecl node);
@@ -14,4 +14,5 @@ public interface NodeVisitor<R> {
     R visit(LiteralExpr node);
     R visit(VariableExpr node);
     R visit(CallExpr node);
+    R visit(BlockStmt node); // Agregamos este método
 }

@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/Node.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 /** Nodo base de AST */
 public interface Node {

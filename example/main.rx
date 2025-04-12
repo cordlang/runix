@@ -1,27 +1,46 @@
-# example/main.rx
-
-func fib(n) {
-  if n == 0 {
-    return 0
-  }
-  if n == 1 {
-    return 1
-  }
-  return fib(n - 1) + fib(n - 2)
+// Función para registrar un nuevo usuario
+func registrar() {
+    print "Registro de nuevo usuario"
+    print "Ingrese su nombre de usuario:"
+    let username = input()
+    print "Ingrese su contraseña:"
+    let password = input()
+    print "Usuario registrado exitosamente!"
+    return {username: username, password: password}
 }
 
-let n = 7
-let resultado = fib(n)
-print "Fibonacci(" + n + ") = " + resultado
-
-let i = 0
-while i < 5 {
-  print "Contador: " + i
-  let i = i + 1
+// Función para iniciar sesión
+func login(user_data) {
+    print "Inicio de sesión"
+    print "Ingrese su nombre de usuario:"
+    let username = input()
+    print "Ingrese su contraseña:"
+    let password = input()
+    
+    if username == user_data.username && password == user_data.password {
+        print "¡Bienvenido " + username + "!"
+        return true
+    } else {
+        print "Credenciales incorrectas"
+        return false
+    }
 }
 
-if resultado > 10 {
-  print "Resultado mayor que 10"
+// Programa principal
+print "Sistema de Login"
+print "1. Registrar nuevo usuario"
+print "2. Iniciar sesión"
+print "3. Salir"
+let opcion = input()
+
+if opcion == "1" {
+    let user_data = registrar()
+    print "Puede iniciar sesión ahora"
+    login(user_data)
+} else if opcion == "2" {
+    print "No hay usuarios registrados"
+} else if opcion == "3" {
+    print "Saliendo..."
 } else {
-  print "Resultado 10 o menor"
+    print "Opción inválida"
 }

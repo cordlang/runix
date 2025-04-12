@@ -1,31 +1,60 @@
-// src/main/java/com/runix/cli/Main.java
 package com.runix.cli;
 
-import com.runix.parser.Tokenizer;
-import com.runix.parser.Parser;
-import com.runix.ast.Program;
-import com.runix.evaluator.Evaluator;
-import com.runix.utils.Helpers;
-
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import com.runix.lexer.Lexer;
+import com.runix.lexer.Token;
+import com.runix.parser.Parser;
+import com.runix.Evaluator.Evaluator;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        if (args.length==0) {
-            System.err.println("Uso: java -jar runix.jar <archivo.rx>");
-            System.exit(1);
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Uso: java -jar runix.jar archivo.rx");
+            return;
         }
-        String code = Files.readString(Path.of(args[0]));
-        Helpers.log("📥 Código leído", code);
 
-        List<com.runix.parser.Token> tokens = new Tokenizer(code).tokenize();
-        Helpers.log("🔠 Tokens", tokens);
+        String filename = args[0];
+        
+        try {
+            // Read the file
+            List<String> lines = Files.readAllLines(
+                Paths.get(filename),
+                StandardCharsets.UTF_8
+            );
+            StringBuilder code = new StringBuilder();
+            for (String line : lines) {
+                code.append(line).append("\n");
+            }
+            System.out.println("\n=== Código fuente ===");
+            System.out.println(code.toString());
+            System.out.println("=== Fin del código ===\n");
 
-        Program ast = new Parser(tokens).parse();
-        Helpers.log("🌲 AST", ast);
-
-        new Evaluator().evaluateProgram(ast);
+            // Lexer
+            Lexer lexer = new Lexer(code.toString());
+            List<Token> tokens = lexer.tokenize();
+            System.out.println("\n=== Tokens ===");
+            for (Token token : tokens) {
+                System.out.println(token);
+            }
+            System.out.println("=== Fin de tokens ===\n");
+            
+            // Parser
+            Parser parser = new Parser(tokens);
+            System.out.println("\n=== Parseando ===");
+            var ast = parser.parse();
+            System.out.println("=== Parse completado ===\n");
+            
+            // Evaluator
+            Evaluator evaluator = new Evaluator();
+            System.out.println("\n=== Evaluando ===");
+            evaluator.visit(ast);
+            System.out.println("=== Evaluación completada ===\n");
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

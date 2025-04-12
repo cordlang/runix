@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/WhileStmt.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 public class WhileStmt implements Node {
     public final Expr condition;

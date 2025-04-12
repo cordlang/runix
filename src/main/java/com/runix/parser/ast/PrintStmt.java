@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/PrintStmt.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 public class PrintStmt implements Node {
     public final Expr expression;

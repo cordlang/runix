@@ -1,8 +1,8 @@
+<!-- runix/pom.xml -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.runix</groupId>
   <artifactId>runix</artifactId>
@@ -34,7 +34,7 @@
 
   <build>
     <plugins>
-      <!-- Compilador Java 21 -->
+      <!-- Compilador Java -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -45,7 +45,7 @@
         </configuration>
       </plugin>
 
-      <!-- JAR ejecutable con dependencias -->
+      <!-- Generador de JAR ejecutable con dependencias -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -56,7 +56,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <!-- Ajustado al paquete com.runix.cli -->
+              <!-- Se usa el paquete com.runix.cli -->
               <mainClass>com.runix.cli.Main</mainClass>
             </manifest>
           </archive>
@@ -72,7 +72,7 @@
         </executions>
       </plugin>
 
-      <!-- Forzar Java >=21 -->
+      <!-- Enforcer para garantizar Java 21 o superior -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

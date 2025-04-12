@@ -1,5 +1,5 @@
-// src/main/java/com/runix/parser/Tokenizer.java
-package com.runix.parser;
+// src/main/java/com/runix/lexer/Tokenizer.java
+package com.runix.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Tokenizer {
                 tokens.add(readIdentifier());
                 continue;
             }
-            if ("+-*/=(){}<>!".indexOf(c) >= 0) {
+            if ("+-*/=(){}<>!,;".indexOf(c) >= 0) {
                 tokens.add(new Token(Token.Type.OPERATOR, String.valueOf(c)));
                 pos++;
                 continue;
@@ -56,11 +56,11 @@ public class Tokenizer {
     }
 
     private Token readString() {
-        pos++; // skip opening "
+        pos++;  // saltar comilla inicial
         int start = pos;
         while (pos < input.length() && input.charAt(pos) != '"') pos++;
         String val = input.substring(start, pos);
-        pos++; // skip closing "
+        pos++;  // saltar comilla final
         return new Token(Token.Type.STRING, val);
     }
 }

@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/VariableExpr.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 public class VariableExpr implements Expr {
     public final String name;

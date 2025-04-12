@@ -1,5 +1,5 @@
-// src/main/java/com/runix/parser/Token.java
-package com.runix.parser;
+// src/main/java/com/runix/lexer/Token.java
+package com.runix.lexer;
 
 public class Token {
     public enum Type {

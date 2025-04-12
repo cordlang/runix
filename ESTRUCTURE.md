@@ -43,3 +43,10 @@ runix/
 │                   │   └── Interpreter.java
 │                   └── util/
 │                       └── Helpers.java
+
+
+code 
+
+mvn clean package
+java -jar target/runix-1.0-SNAPSHOT-jar-with-dependencies.jar example/main.rx
+

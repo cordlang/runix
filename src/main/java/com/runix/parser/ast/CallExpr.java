@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/CallExpr.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 import java.util.List;
 

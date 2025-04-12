@@ -1,14 +1,33 @@
 // src/main/java/com/runix/parser/Parser.java
 package com.runix.parser;
 
-import com.runix.ast.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.runix.lexer.Token;
+import com.runix.parser.ast.BlockStmt;
+import com.runix.parser.ast.Expr;
+import com.runix.parser.ast.FunctionDecl;
+import com.runix.parser.ast.IfStmt;
+import com.runix.parser.ast.Node;
+import com.runix.parser.ast.PrintStmt;
+import com.runix.parser.ast.Program;
+import com.runix.parser.ast.ReturnStmt;
+import com.runix.parser.ast.VarDecl;
+import com.runix.parser.ast.WhileStmt;
+import com.runix.parser.ast.BinaryExpr;
+import com.runix.parser.ast.LiteralExpr;
+import com.runix.parser.ast.VariableExpr;
+import com.runix.parser.ast.CallExpr;
+import com.runix.parser.ast.ExpressionStmt;
 
 public class Parser {
     private final List<Token> tokens;
     private int pos = 0;
 
-    public Parser(List<Token> tokens) { this.tokens = tokens; }
+    public Parser(List<Token> tokens) {
+        this.tokens = tokens;
+    }
 
     public Program parse() {
         List<Node> statements = new ArrayList<>();
@@ -19,9 +38,30 @@ public class Parser {
     }
 
     private Node declaration() {
-        if (matchIdentifier("func")) return functionDecl();
-        if (matchIdentifier("let")) return varDecl();
-        return statement();
+        try {
+            if (matchIdentifier("func"))
+                return functionDecl();
+            if (matchIdentifier("let")) {
+                String name = consume(Token.Type.IDENTIFIER).value;
+                Expr initializer = null;
+                if (match(Token.Type.OPERATOR, "=")) {
+                    initializer = expression();
+                }
+                consume(Token.Type.OPERATOR, ";");
+                return new VarDecl(name, initializer);
+            }
+            if (matchIdentifier("const")) {
+                String name = consume(Token.Type.IDENTIFIER).value;
+                consume(Token.Type.OPERATOR, "=");
+                Expr initializer = expression();
+                consume(Token.Type.OPERATOR, ";");
+                return new VarDecl(name, initializer);
+            }
+            return statement();
+        } catch (RuntimeException e) {
+            synchronize();
+            return null;
+        }
     }
 
     private FunctionDecl functionDecl() {
@@ -29,70 +69,100 @@ public class Parser {
         consume(Token.Type.OPERATOR, "(");
         List<String> params = new ArrayList<>();
         if (!check(Token.Type.OPERATOR, ")")) {
-            do { params.add(consume(Token.Type.IDENTIFIER).value); }
-            while (match(Token.Type.OPERATOR, ","));
+            do {
+                params.add(consume(Token.Type.IDENTIFIER).value);
+            } while (match(Token.Type.OPERATOR, ","));
         }
         consume(Token.Type.OPERATOR, ")");
-        consume(Token.Type.OPERATOR, "{");
-        List<Node> body = new ArrayList<>();
-        while (!check(Token.Type.OPERATOR, "}")) {
-            body.add(declaration());
-        }
-        consume(Token.Type.OPERATOR, "}");
+        BlockStmt body = block();
         return new FunctionDecl(name, params, body);
     }
 
-    private VarDecl varDecl() {
-        String name = consume(Token.Type.IDENTIFIER).value;
-        consume(Token.Type.OPERATOR, "=");
-        Expr initializer = expression();
-        return new VarDecl(name, initializer);
-    }
-
     private Node statement() {
-        if (matchIdentifier("print")) return printStmt();
-        if (matchIdentifier("if")) return ifStmt();
-        if (matchIdentifier("while")) return whileStmt();
-        return expressionStmt();
-    }
-
-    private PrintStmt printStmt() {
-        Expr expr = expression();
-        return new PrintStmt(expr);
+        try {
+            if (matchIdentifier("print")) {
+                Expr expr = expression();
+                consume(Token.Type.OPERATOR, ";");
+                return new PrintStmt(expr);
+            }
+            if (matchIdentifier("if"))
+                return ifStmt();
+            if (matchIdentifier("while"))
+                return whileStmt();
+            if (match(Token.Type.OPERATOR, "return")) {
+                Expr value = expression();
+                consume(Token.Type.OPERATOR, ";");
+                return new ReturnStmt(value);
+            }
+            return expressionStmt();
+        } catch (RuntimeException e) {
+            synchronize();
+            return null;
+        }
     }
 
     private IfStmt ifStmt() {
-        Expr cond = expression();
-        consume(Token.Type.OPERATOR, "{");
-        Node thenBranch = declaration();
-        consume(Token.Type.OPERATOR, "}");
-        Node elseBranch = null;
+        Expr condition = expression();
+        BlockStmt thenBranch = block();
+        BlockStmt elseBranch = null;
         if (matchIdentifier("else")) {
-            consume(Token.Type.OPERATOR, "{");
-            elseBranch = declaration();
-            consume(Token.Type.OPERATOR, "}");
+            elseBranch = block();
         }
-        return new IfStmt(cond, thenBranch, elseBranch);
+        return new IfStmt(condition, thenBranch, elseBranch);
     }
 
     private WhileStmt whileStmt() {
-        Expr cond = expression();
-        consume(Token.Type.OPERATOR, "{");
-        Node body = declaration();
-        consume(Token.Type.OPERATOR, "}");
-        return new WhileStmt(cond, body);
+        Expr condition = expression();
+        BlockStmt body = block();
+        return new WhileStmt(condition, body);
     }
 
     private ExpressionStmt expressionStmt() {
         Expr expr = expression();
+        consume(Token.Type.OPERATOR, ";");
         return new ExpressionStmt(expr);
     }
 
-    private Expr expression() { return equality(); }
+    private BlockStmt block() {
+        consume(Token.Type.OPERATOR, "{");
+        List<Node> statements = new ArrayList<>();
+        while (!check(Token.Type.OPERATOR, "}")) {
+            statements.add(declaration());
+        }
+        consume(Token.Type.OPERATOR, "}");
+        return new BlockStmt(statements);
+    }
+
+    // Expresiones con precedencia
+    private Expr expression() {
+        return assignment();
+    }
+
+    private Expr assignment() {
+        Expr expr = equality();
+        if (match(Token.Type.OPERATOR, "=")) {
+            Expr value = assignment();
+            if (expr instanceof VariableExpr) {
+                return new BinaryExpr(expr, "=", value);
+            }
+            throw new RuntimeException("Target de asignación inválido");
+        }
+        return expr;
+    }
 
     private Expr equality() {
-        Expr expr = addition();
+        Expr expr = comparison();
         while (match(Token.Type.OPERATOR, "==", "!=")) {
+            String op = previous().value;
+            Expr right = comparison();
+            expr = new BinaryExpr(expr, op, right);
+        }
+        return expr;
+    }
+
+    private Expr comparison() {
+        Expr expr = addition();
+        while (match(Token.Type.OPERATOR, ">", ">=", "<", "<=")) {
             String op = previous().value;
             Expr right = addition();
             expr = new BinaryExpr(expr, op, right);
@@ -121,7 +191,7 @@ public class Parser {
     }
 
     private Expr unary() {
-        if (match(Token.Type.OPERATOR, "-")) {
+        if (match(Token.Type.OPERATOR, "-", "!")) {
             String op = previous().value;
             Expr right = unary();
             return new BinaryExpr(new LiteralExpr(0), op, right);
@@ -141,48 +211,110 @@ public class Parser {
             if (match(Token.Type.OPERATOR, "(")) {
                 List<Expr> args = new ArrayList<>();
                 if (!check(Token.Type.OPERATOR, ")")) {
-                    do { args.add(expression()); }
-                    while (match(Token.Type.OPERATOR, ","));
+                    do {
+                        args.add(expression());
+                    } while (match(Token.Type.OPERATOR, ","));
                 }
                 consume(Token.Type.OPERATOR, ")");
                 return new CallExpr(name, args);
             }
             return new VariableExpr(name);
         }
-        throw new RuntimeException("Esperaba expresión");
+        if (match(Token.Type.OPERATOR, "(")) {
+            Expr expr = expression();
+            consume(Token.Type.OPERATOR, ")");
+            return expr;
+        }
+        throw new RuntimeException("Se esperaba una expresión en " + peek());
     }
 
-    // Helpers
+    // Métodos auxiliares
+    private void synchronize() {
+        advance();
+        while (!isAtEnd()) {
+            if (previous().type == Token.Type.OPERATOR && ";".equals(previous().value)) return;
+            
+            switch (peek().type) {
+                case IDENTIFIER:
+                    if (peek().value.equals("func") || peek().value.equals("let") || 
+                        peek().value.equals("const") || peek().value.equals("if") || 
+                        peek().value.equals("while") || peek().value.equals("print") || 
+                        peek().value.equals("return")) {
+                        return;
+                    }
+                    break;
+                case OPERATOR:
+                    if (peek().value.equals(";")) return;
+                    break;
+                case EOF:
+                    return;
+                case NUMBER:
+                case STRING:
+                    break;
+            }
+            advance();
+        }
+    }
+
     private boolean match(Token.Type type, String... vals) {
-        if (check(type, vals)) { advance(); return true; }
+        if (check(type, vals)) {
+            advance();
+            return true;
+        }
         return false;
     }
+
     private boolean match(Token.Type type) {
-        if (check(type)) { advance(); return true; }
+        if (check(type)) {
+            advance();
+            return true;
+        }
         return false;
     }
+
     private boolean matchIdentifier(String val) {
-        if (check(Token.Type.IDENTIFIER, val)) { advance(); return true; }
+        if (check(Token.Type.IDENTIFIER, val)) {
+            advance();
+            return true;
+        }
         return false;
     }
+
     private Token consume(Token.Type type, String val) {
         if (check(type, val)) return advance();
-        throw new RuntimeException("Se esperaba " + val);
+        throw new RuntimeException("Se esperaba '" + val + "' en " + peek());
     }
+
     private Token consume(Token.Type type) {
         if (check(type)) return advance();
-        throw new RuntimeException("Se esperaba token de tipo " + type);
+        throw new RuntimeException("Se esperaba token de tipo " + type + " en " + peek());
     }
+
     private boolean check(Token.Type type, String... vals) {
         if (isAtEnd()) return false;
         Token t = peek();
         if (t.type != type) return false;
-        if (vals.length==0) return true;
-        for (String v: vals) if (t.value.equals(v)) return true;
+        if (vals.length == 0) return true;
+        for (String v : vals) {
+            if (t.value.equals(v)) return true;
+        }
         return false;
     }
-    private Token advance() { if (!isAtEnd()) pos++; return previous(); }
-    private boolean isAtEnd() { return peek().type==Token.Type.EOF; }
-    private Token peek() { return tokens.get(pos); }
-    private Token previous() { return tokens.get(pos-1); }
+
+    private Token advance() {
+        if (!isAtEnd()) pos++;
+        return previous();
+    }
+
+    private boolean isAtEnd() {
+        return peek().type == Token.Type.EOF;
+    }
+
+    private Token peek() {
+        return tokens.get(pos);
+    }
+
+    private Token previous() {
+        return tokens.get(pos - 1);
+    }
 }

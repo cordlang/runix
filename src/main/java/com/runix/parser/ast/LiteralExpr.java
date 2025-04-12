@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/LiteralExpr.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 public class LiteralExpr implements Expr {
     public final Object value;

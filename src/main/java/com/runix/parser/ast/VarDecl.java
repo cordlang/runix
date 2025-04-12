@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/VarDecl.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 public class VarDecl implements Node {
     public final String name;

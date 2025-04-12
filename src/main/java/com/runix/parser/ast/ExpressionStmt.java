@@ -1,5 +1,5 @@
 // src/main/java/com/runix/ast/ExpressionStmt.java
-package com.runix.ast;
+package com.runix.parser.ast;
 
 public class ExpressionStmt implements Node {
     public final Expr expression;
