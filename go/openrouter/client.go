@@ -29,8 +29,8 @@ type chatResponse struct {
 		Message Message `json:"message"`
 	} `json:"choices"`
 	Error struct {
-		Message string `json:"message"`
-		Code    string `json:"code"`
+		Message string      `json:"message"`
+		Code    interface{} `json:"code"`
 	} `json:"error,omitempty"`
 }
 
@@ -131,7 +131,7 @@ func (c *Client) chat(model, context, message string, debug bool) (string, error
 	}
 
 	if r.Error.Message != "" {
-		return "", fmt.Errorf("API error: %s (code: %s)", r.Error.Message, r.Error.Code)
+		return "", fmt.Errorf("API error: %s (code: %v)", r.Error.Message, r.Error.Code)
 	}
 
 	if debug {
