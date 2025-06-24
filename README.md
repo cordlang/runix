@@ -40,6 +40,14 @@ Runix esta implementado completamente en Go. Para compilar las herramientas ejec
 ```bash
 go build ./...
 ```
+### Uso de la IA en consola
+
+Runix puede interactuar con [OpenRouter](https://openrouter.ai) para generar respuestas mediante IA. Define la variable de entorno `OPENROUTER_API_KEY` y utiliza el comando `chat`:
+
+```bash
+ go run ./go/cli chat --context "Hola" "¿Cómo estás?"
+```
+
 
 ---
 
