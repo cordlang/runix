@@ -12,6 +12,27 @@ import (
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
+// StartInBackground starts the server in a goroutine without output
+func (s *Server) StartInBackgroundQuiet() chan error {
+	errChan := make(chan error, 1)
+	
+	go func() {
+		fs := http.FileServer(http.Dir(s.ProjectDir))
+		http.Handle("/", fs)
+		
+		s.server = &http.Server{
+			Addr:    ":1111",
+			Handler: nil,
+		}
+		
+		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			errChan <- err
+		}
+	}()
+	
+	// Give the server a moment to start
+	time.Sleep(100 * time.Millisecond)
+	return errChan
 }
 
 type chatRequest struct {
@@ -48,11 +69,22 @@ func NewClient(apiKey string) *Client {
 	}
 }
 
-// Chat sends a message with an optional context prompt to the given model.
+// Chat sends a message with debug output
 func (c *Client) Chat(model, context, message string) (string, error) {
-	// Debug info
-	fmt.Printf("DEBUG: Using model: %s\n", model)
-	fmt.Printf("DEBUG: API Key length: %d\n", len(c.apiKey))
+	return c.chat(model, context, message, true)
+}
+
+// ChatQuiet sends a message without debug output (for streaming mode)
+func (c *Client) ChatQuiet(model, context, message string) (string, error) {
+	return c.chat(model, context, message, false)
+}
+
+// chat is the internal method that handles both debug and quiet modes
+func (c *Client) chat(model, context, message string, debug bool) (string, error) {
+	if debug {
+		fmt.Printf("DEBUG: Using model: %s\n", model)
+		fmt.Printf("DEBUG: API Key length: %d\n", len(c.apiKey))
+	}
 	
 	var messages []Message
 	if context != "" {
@@ -72,7 +104,9 @@ func (c *Client) Chat(model, context, message string) (string, error) {
 		return "", fmt.Errorf("failed to marshal request: %v", err)
 	}
 
-	fmt.Printf("DEBUG: Request body: %s\n", string(data))
+	if debug {
+		fmt.Printf("DEBUG: Request body: %s\n", string(data))
+	}
 
 	req, err := http.NewRequest("POST", c.baseURL+"/chat/completions", bytes.NewReader(data))
 	if err != nil {
@@ -84,7 +118,9 @@ func (c *Client) Chat(model, context, message string) (string, error) {
 	req.Header.Set("HTTP-Referer", "https://github.com/cordlang/runix")
 	req.Header.Set("X-Title", "runix-cli")
 
-	fmt.Printf("DEBUG: Making request to: %s\n", req.URL.String())
+	if debug {
+		fmt.Printf("DEBUG: Making request to: %s\n", req.URL.String())
+	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -97,8 +133,10 @@ func (c *Client) Chat(model, context, message string) (string, error) {
 		return "", fmt.Errorf("failed to read response: %v", err)
 	}
 	
-	fmt.Printf("DEBUG: Response status: %d\n", resp.StatusCode)
-	fmt.Printf("DEBUG: Response body: %s\n", string(body))
+	if debug {
+		fmt.Printf("DEBUG: Response status: %d\n", resp.StatusCode)
+		fmt.Printf("DEBUG: Response body: %s\n", string(body))
+	}
 	
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("openrouter error (status %d): %s", resp.StatusCode, string(body))
@@ -114,7 +152,9 @@ func (c *Client) Chat(model, context, message string) (string, error) {
 		return "", fmt.Errorf("API error: %s (code: %s)", r.Error.Message, r.Error.Code)
 	}
 	
-	fmt.Printf("DEBUG: Choices count: %d\n", len(r.Choices))
+	if debug {
+		fmt.Printf("DEBUG: Choices count: %d\n", len(r.Choices))
+	}
 	
 	if len(r.Choices) == 0 {
 		return "", fmt.Errorf("no choices returned - response: %s", string(body))

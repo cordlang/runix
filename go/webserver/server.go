@@ -60,6 +60,29 @@ func (s *Server) StartInBackground() chan error {
 	return errChan
 }
 
+// StartInBackgroundQuiet starts the server in a goroutine without output
+func (s *Server) StartInBackgroundQuiet() chan error {
+	errChan := make(chan error, 1)
+	
+	go func() {
+		fs := http.FileServer(http.Dir(s.ProjectDir))
+		http.Handle("/", fs)
+		
+		s.server = &http.Server{
+			Addr:    ":1111",
+			Handler: nil,
+		}
+		
+		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			errChan <- err
+		}
+	}()
+	
+	// Give the server a moment to start
+	time.Sleep(100 * time.Millisecond)
+	return errChan
+}
+
 // Stop gracefully stops the server
 func (s *Server) Stop() error {
 	if s.server != nil {

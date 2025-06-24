@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
+	"runix/go/chat"
 	"runix/go/filemanager"
 	"runix/go/openrouter"
 	"runix/go/processor"
@@ -21,6 +22,7 @@ var (
 	globalFileManager *filemanager.FileManager
 	globalWebServer   *webserver.Server
 	globalProcessor   *processor.ResponseProcessor
+	globalStreamer    *chat.ChatStreamer
 )
 
 // Execute parses CLI arguments and dispatches to subcommands.
@@ -67,11 +69,11 @@ func initializeSystem() error {
 	// Initialize web server
 	globalWebServer = webserver.NewServer(globalFileManager.GetProjectPath())
 	
-	// Initialize response processor
+	// Initialize response processor (sin debug para el modo chat)
 	globalProcessor = processor.NewResponseProcessor(globalFileManager, globalWebServer)
 	
-	fmt.Println("🚀 Sistema Runix inicializado")
-	fmt.Printf("📁 Directorio de proyecto: %s\n", globalFileManager.GetProjectPath())
+	// Initialize chat streamer
+	globalStreamer = chat.NewChatStreamer()
 	
 	return nil
 }
@@ -83,13 +85,14 @@ func setupCleanup() {
 	
 	go func() {
 		<-c
-		fmt.Println("\n🧹 Limpiando...")
+		fmt.Println("\n🧹 Limpiando y cerrando...")
 		if globalWebServer != nil {
 			globalWebServer.Stop()
 		}
 		if globalFileManager != nil {
 			globalFileManager.Cleanup()
 		}
+		fmt.Println("👋 ¡Hasta luego!")
 		os.Exit(0)
 	}()
 }
@@ -145,7 +148,7 @@ func createCmd(args []string) {
 	fmt.Println("created directory", path)
 }
 
-// demoCmd provides an interactive chat loop with animated output.
+// demoCmd provides an interactive chat loop with real-time streaming
 func demoCmd(args []string) {
 	fs := flag.NewFlagSet("demo", flag.ExitOnError)
 	context := fs.String("context", "", "context prompt")
@@ -167,33 +170,46 @@ func demoCmd(args []string) {
 		return
 	}
 
+	// Show welcome message
+	globalStreamer.ShowWelcome()
+
 	client := openrouter.NewClient(apiKey)
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("Escribe 'exit' para terminar la conversación.")
-	fmt.Println("💡 Tip: Pide que cree HTML, CSS o JavaScript y se desplegará automáticamente en http://localhost:1111")
 	
 	for {
-		fmt.Print(":user: ")
+		globalStreamer.ShowUserPrompt()
+		
 		if !scanner.Scan() {
 			break
 		}
+		
 		msg := strings.TrimSpace(scanner.Text())
 		if msg == "" {
 			continue
 		}
 		if strings.ToLower(msg) == "exit" {
+			fmt.Println("\n👋 ¡Hasta luego!")
 			break
 		}
-		animate("generando respuesta")
-		reply, err := client.Chat(*model, *context, msg)
+		
+		// Show user message
+		globalStreamer.StreamResponse("user", msg)
+		
+		// Show thinking animation
+		globalStreamer.ShowThinking()
+		
+		// Get AI response (without debug prints)
+		reply, err := client.ChatQuiet(*model, *context, msg)
 		if err != nil {
-			fmt.Println("error:", err)
+			fmt.Printf("❌ Error: %v\n", err)
 			continue
 		}
 		
-		// Process the response
-		processedReply := globalProcessor.ProcessResponse(reply)
-		chat("runix", processedReply)
+		// Process files if needed (silently)
+		globalProcessor.ProcessResponseQuiet(reply)
+		
+		// Stream the AI response in real-time
+		globalStreamer.StreamResponse("runix", reply)
 	}
 	
 	// Cleanup
