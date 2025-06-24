@@ -57,22 +57,22 @@ func usage() {
 // initializeSystem initializes the file manager, web server, and processor
 func initializeSystem() error {
 	var err error
-
+	
 	// Initialize file manager
 	globalFileManager, err = filemanager.NewFileManager()
 	if err != nil {
 		return fmt.Errorf("error inicializando gestor de archivos: %v", err)
 	}
-
+	
 	// Initialize web server
 	globalWebServer = webserver.NewServer(globalFileManager.GetProjectPath())
-
+	
 	// Initialize response processor
 	globalProcessor = processor.NewResponseProcessor(globalFileManager, globalWebServer)
-
+	
 	fmt.Println("🚀 Sistema Runix inicializado")
 	fmt.Printf("📁 Directorio de proyecto: %s\n", globalFileManager.GetProjectPath())
-
+	
 	return nil
 }
 
@@ -80,7 +80,7 @@ func initializeSystem() error {
 func setupCleanup() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
+	
 	go func() {
 		<-c
 		fmt.Println("\n🧹 Limpiando...")
@@ -121,23 +121,15 @@ func chatCmd(args []string) {
 
 	client := openrouter.NewClient(apiKey)
 	animate("generando respuesta")
-	stream, err := client.ChatStream(*model, *context, fs.Arg(0))
+	reply, err := client.Chat(*model, *context, fs.Arg(0))
 	if err != nil {
 		fmt.Println("error:", err)
 		return
 	}
-
-	var fullReply strings.Builder
-	for token := range stream {
-		fmt.Print(token)
-		fullReply.WriteString(token)
-	}
-	fmt.Println()
-
-	processedReply := globalProcessor.ProcessResponse(fullReply.String())
-	if processedReply != fullReply.String() {
-		chat("runix", processedReply)
-	}
+	
+	// Process the response
+	processedReply := globalProcessor.ProcessResponse(reply)
+	chat("runix", processedReply)
 }
 
 func createCmd(args []string) {
@@ -165,7 +157,7 @@ func demoCmd(args []string) {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
-
+	
 	// Setup cleanup
 	setupCleanup()
 
@@ -179,7 +171,7 @@ func demoCmd(args []string) {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("Escribe 'exit' para terminar la conversación.")
 	fmt.Println("💡 Tip: Pide que cree HTML, CSS o JavaScript y se desplegará automáticamente en http://localhost:1111")
-
+	
 	for {
 		fmt.Print(":user: ")
 		if !scanner.Scan() {
@@ -193,25 +185,17 @@ func demoCmd(args []string) {
 			break
 		}
 		animate("generando respuesta")
-		stream, err := client.ChatStream(*model, *context, msg)
+		reply, err := client.Chat(*model, *context, msg)
 		if err != nil {
 			fmt.Println("error:", err)
 			continue
 		}
-
-		var fullReply strings.Builder
-		for token := range stream {
-			fmt.Print(token)
-			fullReply.WriteString(token)
-		}
-		fmt.Println()
-
-		processedReply := globalProcessor.ProcessResponse(fullReply.String())
-		if processedReply != fullReply.String() {
-			chat("runix", processedReply)
-		}
+		
+		// Process the response
+		processedReply := globalProcessor.ProcessResponse(reply)
+		chat("runix", processedReply)
 	}
-
+	
 	// Cleanup
 	if globalWebServer != nil {
 		globalWebServer.Stop()
@@ -228,10 +212,10 @@ func serverCmd(args []string) {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
-
+	
 	// Setup cleanup
 	setupCleanup()
-
+	
 	// Start server
 	if err := globalWebServer.Start(); err != nil {
 		fmt.Printf("Error iniciando servidor: %v\n", err)
