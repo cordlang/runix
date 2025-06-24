@@ -59,22 +59,22 @@ func usage() {
 // initializeSystem initializes the file manager, web server, and processor
 func initializeSystem() error {
 	var err error
-	
+
 	// Initialize file manager
 	globalFileManager, err = filemanager.NewFileManager()
 	if err != nil {
 		return fmt.Errorf("error inicializando gestor de archivos: %v", err)
 	}
-	
+
 	// Initialize web server
 	globalWebServer = webserver.NewServer(globalFileManager.GetProjectPath())
-	
+
 	// Initialize response processor (sin debug para el modo chat)
 	globalProcessor = processor.NewResponseProcessor(globalFileManager, globalWebServer)
-	
+
 	// Initialize chat streamer
 	globalStreamer = chat.NewChatStreamer()
-	
+
 	return nil
 }
 
@@ -82,7 +82,7 @@ func initializeSystem() error {
 func setupCleanup() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	
+
 	go func() {
 		<-c
 		fmt.Println("\n🧹 Limpiando y cerrando...")
@@ -129,10 +129,10 @@ func chatCmd(args []string) {
 		fmt.Println("error:", err)
 		return
 	}
-	
+
 	// Process the response
 	processedReply := globalProcessor.ProcessResponse(reply)
-	chat("runix", processedReply)
+	printChat("runix", processedReply)
 }
 
 func createCmd(args []string) {
@@ -160,7 +160,7 @@ func demoCmd(args []string) {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
-	
+
 	// Setup cleanup
 	setupCleanup()
 
@@ -175,14 +175,14 @@ func demoCmd(args []string) {
 
 	client := openrouter.NewClient(apiKey)
 	scanner := bufio.NewScanner(os.Stdin)
-	
+
 	for {
 		globalStreamer.ShowUserPrompt()
-		
+
 		if !scanner.Scan() {
 			break
 		}
-		
+
 		msg := strings.TrimSpace(scanner.Text())
 		if msg == "" {
 			continue
@@ -191,27 +191,27 @@ func demoCmd(args []string) {
 			fmt.Println("\n👋 ¡Hasta luego!")
 			break
 		}
-		
+
 		// Show user message
 		globalStreamer.StreamResponse("user", msg)
-		
+
 		// Show thinking animation
 		globalStreamer.ShowThinking()
-		
+
 		// Get AI response (without debug prints)
 		reply, err := client.ChatQuiet(*model, *context, msg)
 		if err != nil {
 			fmt.Printf("❌ Error: %v\n", err)
 			continue
 		}
-		
+
 		// Process files if needed (silently)
 		globalProcessor.ProcessResponseQuiet(reply)
-		
+
 		// Stream the AI response in real-time
 		globalStreamer.StreamResponse("runix", reply)
 	}
-	
+
 	// Cleanup
 	if globalWebServer != nil {
 		globalWebServer.Stop()
@@ -228,17 +228,17 @@ func serverCmd(args []string) {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
-	
+
 	// Setup cleanup
 	setupCleanup()
-	
+
 	// Start server
 	if err := globalWebServer.Start(); err != nil {
 		fmt.Printf("Error iniciando servidor: %v\n", err)
 	}
 }
 
-func chat(role, msg string) {
+func printChat(role, msg string) {
 	// Format the output nicely
 	fmt.Printf("\n:%s:\n%s\n\n", role, msg)
 }

@@ -8,50 +8,46 @@ import (
 	"strings"
 )
 
+// FileManager manages temporary project files.
 type FileManager struct {
 	TempDir    string
 	ProjectDir string
 }
 
-// NewFileManager creates a new file manager with temp directories
+// NewFileManager creates temporary directories for a project.
 func NewFileManager() (*FileManager, error) {
 	tempDir := filepath.Join(os.TempDir(), "runix_temp")
 	projectDir := filepath.Join(tempDir, "project")
-	
-	// Create directories if they don't exist
-	if err := os.MkdirAll(projectDir, 0755); err != nil {
+
+	if err := os.MkdirAll(projectDir, 0o755); err != nil {
 		return nil, err
 	}
-	
+
 	return &FileManager{
 		TempDir:    tempDir,
 		ProjectDir: projectDir,
 	}, nil
 }
 
-// ProcessAIResponse processes the AI response and extracts code blocks
+// ProcessAIResponse processes the AI response with debug output.
 func (fm *FileManager) ProcessAIResponse(response string) error {
 	return fm.processAIResponse(response, true)
 }
 
-// ProcessAIResponseQuiet processes the AI response without debug output
+// ProcessAIResponseQuiet processes the AI response without debug output.
 func (fm *FileManager) ProcessAIResponseQuiet(response string) error {
 	return fm.processAIResponse(response, false)
 }
 
-// processAIResponse is the internal method that handles both debug and quiet modes
 func (fm *FileManager) processAIResponse(response string, debug bool) error {
 	if debug {
 		fmt.Printf("DEBUG: Procesando respuesta de %d caracteres\n", len(response))
 	}
-	
-	// Extract HTML code blocks
+
 	htmlBlocks := fm.extractCodeBlocks(response, debug, "html")
 	if debug {
 		fmt.Printf("DEBUG: Encontrados %d bloques HTML\n", len(htmlBlocks))
 	}
-	
-	// If HTML found, create index.html
 	if len(htmlBlocks) > 0 {
 		indexPath := filepath.Join(fm.ProjectDir, "index.html")
 		if debug {
@@ -59,56 +55,36 @@ func (fm *FileManager) processAIResponse(response string, debug bool) error {
 		}
 		return fm.writeFile(indexPath, htmlBlocks[0], debug)
 	}
-	
-	// Extract CSS code blocks
+
 	cssBlocks := fm.extractCodeBlocks(response, debug, "css")
 	if len(cssBlocks) > 0 {
 		cssPath := filepath.Join(fm.ProjectDir, "style.css")
 		return fm.writeFile(cssPath, cssBlocks[0], debug)
 	}
-	
-	// Extract JavaScript code blocks
+
 	jsBlocks := fm.extractCodeBlocks(response, debug, "javascript", "js")
 	if len(jsBlocks) > 0 {
 		jsPath := filepath.Join(fm.ProjectDir, "script.js")
 		return fm.writeFile(jsPath, jsBlocks[0], debug)
 	}
-	
+
 	if debug {
 		fmt.Printf("DEBUG: No se encontraron bloques de código\n")
 	}
 	return nil
-}.ProjectDir, "style.css")
-		return fm.writeFile(cssPath, cssBlocks[0])
-	}
-	
-	// Extract JavaScript code blocks
-	jsBlocks := fm.extractCodeBlocks(response, "javascript", "js")
-	if len(jsBlocks) > 0 {
-		jsPath := filepath.Join(fm.ProjectDir, "script.js")
-		return fm.writeFile(jsPath, jsBlocks[0])
-	}
-	
-	fmt.Printf("DEBUG: No se encontraron bloques de código\n")
-	return nil
 }
 
-// extractCodeBlocks extracts code blocks from markdown-style code fences
+// extractCodeBlocks extracts fenced code blocks from text.
 func (fm *FileManager) extractCodeBlocks(text string, debug bool, languages ...string) []string {
 	var blocks []string
-	
 	for _, lang := range languages {
-		// Patrón mejorado para bloques de código
-		// Busca ```language seguido de contenido hasta ```
 		pattern := fmt.Sprintf("```%s(?:\\s*\\r?\\n)([\\s\\S]*?)\\r?\\n```", lang)
 		re := regexp.MustCompile(pattern)
 		matches := re.FindAllStringSubmatch(text, -1)
-		
 		if debug {
 			fmt.Printf("DEBUG: Buscando patrón para %s: %s\n", lang, pattern)
 			fmt.Printf("DEBUG: Encontradas %d coincidencias para %s\n", len(matches), lang)
 		}
-		
 		for i, match := range matches {
 			if len(match) > 1 {
 				content := strings.TrimSpace(match[1])
@@ -119,48 +95,24 @@ func (fm *FileManager) extractCodeBlocks(text string, debug bool, languages ...s
 			}
 		}
 	}
-	
 	return blocks
 }
 
-// writeFile writes content to a file
+// writeFile writes content to a file.
 func (fm *FileManager) writeFile(path, content string, debug bool) error {
 	if debug {
 		fmt.Printf("📄 Creando archivo: %s\n", filepath.Base(path))
 		fmt.Printf("DEBUG: Contenido del archivo (%d caracteres): %.200s...\n", len(content), content)
 	}
-	return os.WriteFile(path, []byte(content), 0644)
+	return os.WriteFile(path, []byte(content), 0o644)
 }
 
-// GetProjectPath returns the project directory path
+// GetProjectPath returns the path to the generated project.
 func (fm *FileManager) GetProjectPath() string {
 	return fm.ProjectDir
 }
 
-// StartInBackgroundQuiet starts the server in a goroutine without output
-func (s *Server) StartInBackgroundQuiet() chan error {
-	errChan := make(chan error, 1)
-	
-	go func() {
-		fs := http.FileServer(http.Dir(s.ProjectDir))
-		http.Handle("/", fs)
-		
-		s.server = &http.Server{
-			Addr:    ":1111",
-			Handler: nil,
-		}
-		
-		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			errChan <- err
-		}
-	}()
-	
-	// Give the server a moment to start
-	time.Sleep(100 * time.Millisecond)
-	return errChan
-}
-
-// Cleanup removes the temporary directory
+// Cleanup removes the temporary directory.
 func (fm *FileManager) Cleanup() error {
 	return os.RemoveAll(fm.TempDir)
 }
