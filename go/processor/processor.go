@@ -119,7 +119,7 @@ func (rp *ResponseProcessor) containsCodeBlocks(response string) bool {
 
 	for _, pattern := range patterns {
 		if strings.Contains(response, pattern) {
-			fmt.Printf("DEBUG: Encontrado patrón: %s\n", pattern)
+			// fmt.Printf("DEBUG: Encontrado patrón: %s\n", pattern)
 			return true
 		}
 	}
