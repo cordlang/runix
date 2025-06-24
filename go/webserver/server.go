@@ -22,11 +22,12 @@ func NewServer(projectDir string) *Server {
 // Start starts the web server on port 1111
 func (s *Server) Start() error {
 	fs := http.FileServer(http.Dir(s.ProjectDir))
-	http.Handle("/", fs)
+	mux := http.NewServeMux()
+	mux.Handle("/", fs)
 
 	s.server = &http.Server{
 		Addr:    ":1111",
-		Handler: nil,
+		Handler: mux,
 	}
 
 	fmt.Println("🌐 Servidor iniciado en http://localhost:1111")
@@ -41,11 +42,12 @@ func (s *Server) StartInBackground() chan error {
 
 	go func() {
 		fs := http.FileServer(http.Dir(s.ProjectDir))
-		http.Handle("/", fs)
+		mux := http.NewServeMux()
+		mux.Handle("/", fs)
 
 		s.server = &http.Server{
 			Addr:    ":1111",
-			Handler: nil,
+			Handler: mux,
 		}
 
 		fmt.Println("🌐 Servidor iniciado en http://localhost:1111")
@@ -66,11 +68,12 @@ func (s *Server) StartInBackgroundQuiet() chan error {
 
 	go func() {
 		fs := http.FileServer(http.Dir(s.ProjectDir))
-		http.Handle("/", fs)
+		mux := http.NewServeMux()
+		mux.Handle("/", fs)
 
 		s.server = &http.Server{
 			Addr:    ":1111",
-			Handler: nil,
+			Handler: mux,
 		}
 
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
