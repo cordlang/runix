@@ -31,12 +31,16 @@ func NewFileManager() (*FileManager, error) {
 
 // ProcessAIResponse processes the AI response and extracts code blocks
 func (fm *FileManager) ProcessAIResponse(response string) error {
+	fmt.Printf("DEBUG: Procesando respuesta de %d caracteres\n", len(response))
+	
 	// Extract HTML code blocks
 	htmlBlocks := fm.extractCodeBlocks(response, "html")
+	fmt.Printf("DEBUG: Encontrados %d bloques HTML\n", len(htmlBlocks))
 	
 	// If HTML found, create index.html
 	if len(htmlBlocks) > 0 {
 		indexPath := filepath.Join(fm.ProjectDir, "index.html")
+		fmt.Printf("DEBUG: Creando archivo HTML en: %s\n", indexPath)
 		return fm.writeFile(indexPath, htmlBlocks[0])
 	}
 	
@@ -54,6 +58,7 @@ func (fm *FileManager) ProcessAIResponse(response string) error {
 		return fm.writeFile(jsPath, jsBlocks[0])
 	}
 	
+	fmt.Printf("DEBUG: No se encontraron bloques de código\n")
 	return nil
 }
 
@@ -62,14 +67,20 @@ func (fm *FileManager) extractCodeBlocks(text string, languages ...string) []str
 	var blocks []string
 	
 	for _, lang := range languages {
-		// Pattern for code blocks: ```language\ncode\n```
-		pattern := fmt.Sprintf("(?s)```%s\\s*\\n(.*?)\\n```", lang)
+		// Patrón mejorado para bloques de código
+		// Busca ```language seguido de contenido hasta ```
+		pattern := fmt.Sprintf("```%s(?:\\s*\\r?\\n)([\\s\\S]*?)\\r?\\n```", lang)
 		re := regexp.MustCompile(pattern)
 		matches := re.FindAllStringSubmatch(text, -1)
 		
-		for _, match := range matches {
+		fmt.Printf("DEBUG: Buscando patrón para %s: %s\n", lang, pattern)
+		fmt.Printf("DEBUG: Encontradas %d coincidencias para %s\n", len(matches), lang)
+		
+		for i, match := range matches {
 			if len(match) > 1 {
-				blocks = append(blocks, strings.TrimSpace(match[1]))
+				content := strings.TrimSpace(match[1])
+				fmt.Printf("DEBUG: Bloque %d de %s (%d caracteres): %.100s...\n", i+1, lang, len(content), content)
+				blocks = append(blocks, content)
 			}
 		}
 	}
@@ -80,6 +91,7 @@ func (fm *FileManager) extractCodeBlocks(text string, languages ...string) []str
 // writeFile writes content to a file
 func (fm *FileManager) writeFile(path, content string) error {
 	fmt.Printf("📄 Creando archivo: %s\n", filepath.Base(path))
+	fmt.Printf("DEBUG: Contenido del archivo (%d caracteres): %.200s...\n", len(content), content)
 	return os.WriteFile(path, []byte(content), 0644)
 }
 

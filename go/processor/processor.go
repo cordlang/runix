@@ -31,6 +31,8 @@ func NewResponseProcessor(fm FileManagerInterface, ws WebServerInterface) *Respo
 
 // ProcessResponse processes the AI response and handles file creation and server deployment
 func (rp *ResponseProcessor) ProcessResponse(response string) string {
+	fmt.Printf("DEBUG: Procesando respuesta de %d caracteres\n", len(response))
+	
 	// Check if response contains code blocks
 	if rp.containsCodeBlocks(response) {
 		fmt.Println("🔧 Detectado código en la respuesta, procesando...")
@@ -56,7 +58,11 @@ func (rp *ResponseProcessor) ProcessResponse(response string) string {
 				// Server started successfully
 				response += "\n\n🌐 **Tu proyecto está disponible en:** http://localhost:1111"
 			}
+		} else {
+			fmt.Println("❌ No se crearon archivos HTML")
 		}
+	} else {
+		fmt.Println("DEBUG: No se detectaron bloques de código en la respuesta")
 	}
 	
 	// Clean up the response for better formatting
@@ -74,9 +80,12 @@ func (rp *ResponseProcessor) containsCodeBlocks(response string) bool {
 	
 	for _, pattern := range patterns {
 		if strings.Contains(response, pattern) {
+			fmt.Printf("DEBUG: Encontrado patrón: %s\n", pattern)
 			return true
 		}
 	}
+	
+	fmt.Println("DEBUG: No se encontraron patrones de código")
 	return false
 }
 
