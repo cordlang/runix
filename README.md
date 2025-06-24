@@ -33,6 +33,14 @@ Runix se creó con la intención de:
 2. **Tutoriales Rápidos:** Experimenta con ejemplos prácticos en la sección de [tutoriales](#).
 3. **Comunidad:** Únete a nuestro [foro](#) para compartir experiencias, dudas y sugerencias.
 
+### Desarrollo en Go
+
+Runix esta implementado completamente en Go. Para compilar las herramientas ejecuta:
+
+```bash
+go build ./...
+```
+
 ---
 
 ## Contribuciones
