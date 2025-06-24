@@ -23,38 +23,38 @@ func NewServer(projectDir string) *Server {
 func (s *Server) Start() error {
 	fs := http.FileServer(http.Dir(s.ProjectDir))
 	http.Handle("/", fs)
-	
+
 	s.server = &http.Server{
 		Addr:    ":1111",
 		Handler: nil,
 	}
-	
+
 	fmt.Println("🌐 Servidor iniciado en http://localhost:1111")
 	fmt.Println("   Presiona Ctrl+C para detener el servidor")
-	
+
 	return s.server.ListenAndServe()
 }
 
 // StartInBackground starts the server in a goroutine
 func (s *Server) StartInBackground() chan error {
 	errChan := make(chan error, 1)
-	
+
 	go func() {
 		fs := http.FileServer(http.Dir(s.ProjectDir))
 		http.Handle("/", fs)
-		
+
 		s.server = &http.Server{
 			Addr:    ":1111",
 			Handler: nil,
 		}
-		
+
 		fmt.Println("🌐 Servidor iniciado en http://localhost:1111")
-		
+
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- err
 		}
 	}()
-	
+
 	// Give the server a moment to start
 	time.Sleep(100 * time.Millisecond)
 	return errChan
@@ -63,21 +63,21 @@ func (s *Server) StartInBackground() chan error {
 // StartInBackgroundQuiet starts the server in a goroutine without output
 func (s *Server) StartInBackgroundQuiet() chan error {
 	errChan := make(chan error, 1)
-	
+
 	go func() {
 		fs := http.FileServer(http.Dir(s.ProjectDir))
 		http.Handle("/", fs)
-		
+
 		s.server = &http.Server{
 			Addr:    ":1111",
 			Handler: nil,
 		}
-		
+
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- err
 		}
 	}()
-	
+
 	// Give the server a moment to start
 	time.Sleep(100 * time.Millisecond)
 	return errChan

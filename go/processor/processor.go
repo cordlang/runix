@@ -46,13 +46,13 @@ func (rp *ResponseProcessor) processResponse(response string, debug bool) string
 	if debug {
 		fmt.Printf("DEBUG: Procesando respuesta de %d caracteres\n", len(response))
 	}
-	
+
 	// Check if response contains code blocks
 	if rp.containsCodeBlocks(response) {
 		if debug {
 			fmt.Println("🔧 Detectado código en la respuesta, procesando...")
 		}
-		
+
 		// Process the AI response and create files
 		var err error
 		if debug {
@@ -60,20 +60,20 @@ func (rp *ResponseProcessor) processResponse(response string, debug bool) string
 		} else {
 			err = rp.fileManager.ProcessAIResponseQuiet(response)
 		}
-		
+
 		if err != nil {
 			if debug {
 				fmt.Printf("❌ Error procesando archivos: %v\n", err)
 			}
 			return response
 		}
-		
+
 		// Check if files were created and start server if needed
 		if rp.webServer.CheckIfFileExists() {
 			if debug {
 				fmt.Println("✅ Archivos creados exitosamente")
 			}
-			
+
 			// Start web server in background
 			var errChan chan error
 			if debug {
@@ -81,7 +81,7 @@ func (rp *ResponseProcessor) processResponse(response string, debug bool) string
 			} else {
 				errChan = rp.webServer.StartInBackgroundQuiet()
 			}
-			
+
 			// Check for immediate errors
 			select {
 			case err := <-errChan:
@@ -100,7 +100,7 @@ func (rp *ResponseProcessor) processResponse(response string, debug bool) string
 	} else if debug {
 		fmt.Println("DEBUG: No se detectaron bloques de código en la respuesta")
 	}
-	
+
 	// Clean up the response for better formatting only in debug mode
 	if debug {
 		return rp.cleanResponse(response)
@@ -116,14 +116,14 @@ func (rp *ResponseProcessor) containsCodeBlocks(response string) bool {
 		"```javascript",
 		"```js",
 	}
-	
+
 	for _, pattern := range patterns {
 		if strings.Contains(response, pattern) {
 			fmt.Printf("DEBUG: Encontrado patrón: %s\n", pattern)
 			return true
 		}
 	}
-	
+
 	fmt.Println("DEBUG: No se encontraron patrones de código")
 	return false
 }
@@ -134,13 +134,13 @@ func (rp *ResponseProcessor) cleanResponse(response string) string {
 	htmlPattern := regexp.MustCompile("(?s)```html.*?```")
 	cssPattern := regexp.MustCompile("(?s)```css.*?```")
 	jsPattern := regexp.MustCompile("(?s)```(?:javascript|js).*?```")
-	
+
 	cleaned := htmlPattern.ReplaceAllString(response, "[Código HTML creado en /temp/project/index.html]")
 	cleaned = cssPattern.ReplaceAllString(cleaned, "[Código CSS creado en /temp/project/style.css]")
 	cleaned = jsPattern.ReplaceAllString(cleaned, "[Código JavaScript creado en /temp/project/script.js]")
-	
+
 	// Clean up extra newlines
 	cleaned = regexp.MustCompile(`\n{3,}`).ReplaceAllString(cleaned, "\n\n")
-	
+
 	return strings.TrimSpace(cleaned)
 }

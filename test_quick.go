@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"runix/go/filemanager"
 	"runix/go/processor"
 	"runix/go/webserver"
+	"strings"
 )
 
 func main() {
@@ -54,7 +54,7 @@ Puedes copiar este código en un archivo con extensión .html (por ejemplo, "hol
 
 	// Verify file was created
 	fmt.Printf("\nDirectorio de proyecto: %s\n", fm.GetProjectPath())
-	
+
 	if ws.CheckIfFileExists() {
 		fmt.Println("✅ ¡Archivo index.html creado exitosamente!")
 		fmt.Println("🌐 Puedes abrir http://localhost:1111 en tu navegador")
