@@ -1,0 +1,4 @@
+# Default color settings
+prompt_color=cyan
+user_color=green
+bot_color=yellow
