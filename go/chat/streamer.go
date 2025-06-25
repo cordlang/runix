@@ -10,6 +10,16 @@ import (
 	"github.com/fatih/color"
 )
 
+const asciiBanner = `____/\\\\\______/\\________/\\__/\\\_____/\\__/\\\\\\\\__/\\_______/\\_        
+ __/\\///////\\___\/\\_______\/\\_\/\\\\\___\/\\_\/////\\///__\///\\___/\\\/__       
+  _\/\\_____\/\\___\/\\_______\/\\_\/\\\/\\__\/\\_____\/\\_______\///\\\\\/____      
+   _\/\\\\\\\\\/____\/\\_______\/\\_\/\\//\\_\/\\_____\/\\_________\//\\______     
+    _\/\\//////\\____\/\\_______\/\\_\/\\\\//\\/\\_____\/\\__________\/\\______    
+     _\/\\____\//\\___\/\\_______\/\\_\/\\_\//\\\/\\_____\/\\__________/\\\\\_____   
+      _\/\\_____\//\\__\//\\______/\\__\/\\__\//\\\\\_____\/\\________/\\////\\___  
+       _\/\\______\//\\__\///\\\\\\\/___\/\\___\//\\\__/\\\\\\\\\/__/\\\/___\///\\_ 
+        _\///________\///_____\////////_____\///_____\////__/\\\\\\///__\///_______\///__`
+
 type ChatStreamer struct {
 	typingSpeed time.Duration
 }
@@ -23,6 +33,9 @@ func NewChatStreamer() *ChatStreamer {
 
 // StreamResponse streams the AI response in real-time with special handling for code blocks
 func (cs *ChatStreamer) StreamResponse(role, response string) {
+	// Format response for better streaming
+	response = cs.FormatResponse(response)
+
 	// Colors for different roles
 	userColor := color.New(color.FgCyan, color.Bold)
 	botColor := color.New(color.FgGreen, color.Bold)
@@ -133,6 +146,13 @@ func (cs *ChatStreamer) showProgressBar(message string, steps int) {
 	fmt.Print("\n")
 }
 
+// FormatResponse normalizes whitespace and line endings
+func (cs *ChatStreamer) FormatResponse(resp string) string {
+	resp = strings.ReplaceAll(resp, "\r\n", "\n")
+	resp = regexp.MustCompile(`\n{3,}`).ReplaceAllString(resp, "\n\n")
+	return strings.TrimSpace(resp)
+}
+
 // ResponsePart represents a part of the response (text or code)
 type ResponsePart struct {
 	content  string
@@ -213,6 +233,8 @@ func (cs *ChatStreamer) containsCodeBlocks(response string) bool {
 		"```js",
 		"```python",
 		"```go",
+		"```bash",
+		"```shell",
 	}
 
 	for _, pattern := range patterns {
@@ -225,6 +247,7 @@ func (cs *ChatStreamer) containsCodeBlocks(response string) bool {
 
 // ShowWelcome shows the welcome message with style
 func (cs *ChatStreamer) ShowWelcome() {
+	cs.ShowBanner()
 	titleColor := color.New(color.FgMagenta, color.Bold)
 	subtitleColor := color.New(color.FgCyan)
 	tipColor := color.New(color.FgYellow)
@@ -259,4 +282,10 @@ func (cs *ChatStreamer) ShowThinking() {
 	s.Stop()
 
 	thinkingColor.Print("💭 Generando respuesta...\n")
+}
+
+// ShowBanner prints the Runix ASCII art banner
+func (cs *ChatStreamer) ShowBanner() {
+	bannerColor := color.New(color.FgHiMagenta, color.Bold)
+	bannerColor.Println(asciiBanner)
 }

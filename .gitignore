@@ -20,3 +20,4 @@ vendor/
 Thumbs.db
 
 runix*
+!setting/runix.local

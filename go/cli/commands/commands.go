@@ -15,14 +15,16 @@ import (
 	"runix/go/filemanager"
 	"runix/go/openrouter"
 	"runix/go/processor"
+	"runix/go/settings"
 	"runix/go/webserver"
 )
 
 var (
-	globalFileManager *filemanager.FileManager
-	globalWebServer   *webserver.Server
-	globalProcessor   *processor.ResponseProcessor
-	globalStreamer    *chat.ChatStreamer
+	globalFileManager  *filemanager.FileManager
+	globalWebServer    *webserver.Server
+	globalConfigServer *webserver.ConfigServer
+	globalProcessor    *processor.ResponseProcessor
+	globalStreamer     *chat.ChatStreamer
 )
 
 // Execute parses CLI arguments and dispatches to subcommands.
@@ -60,6 +62,9 @@ func usage() {
 func initializeSystem() error {
 	var err error
 
+	// Load local environment variables
+	_ = settings.LoadEnv("setting/runix.local")
+
 	// Initialize file manager
 	globalFileManager, err = filemanager.NewFileManager()
 	if err != nil {
@@ -75,6 +80,10 @@ func initializeSystem() error {
 	// Initialize chat streamer
 	globalStreamer = chat.NewChatStreamer()
 
+	// Start configuration server
+	globalConfigServer = webserver.NewConfigServer("setting")
+	globalConfigServer.StartInBackground()
+
 	return nil
 }
 
@@ -88,6 +97,9 @@ func setupCleanup() {
 		fmt.Println("\n🧹 Limpiando y cerrando...")
 		if globalWebServer != nil {
 			globalWebServer.Stop()
+		}
+		if globalConfigServer != nil {
+			globalConfigServer.Stop()
 		}
 		if globalFileManager != nil {
 			globalFileManager.Cleanup()
@@ -215,6 +227,9 @@ func demoCmd(args []string) {
 	// Cleanup
 	if globalWebServer != nil {
 		globalWebServer.Stop()
+	}
+	if globalConfigServer != nil {
+		globalConfigServer.Stop()
 	}
 	if globalFileManager != nil {
 		globalFileManager.Cleanup()
