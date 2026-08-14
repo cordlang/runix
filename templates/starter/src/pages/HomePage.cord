@@ -1,0 +1,9 @@
+use ../components/Counter
+
+title "Inicio — Runix"
+
+col gap=24 max-w=640
+  h1 "Runix" type=display color=primary
+  p "Framework web sobre Cordlang. Escribes .cord; Runix se encarga del producto." type=body muted
+  Counter label="Clicks"
+  link "Qué es esto" to=/about

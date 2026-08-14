@@ -1,0 +1,9 @@
+title "Runix — framework sobre Cordlang"
+
+col gap=24 p=32 md:p=64 center max-w=720
+  h1 "Runix" type=display color=primary
+  h2 "Escribes .cord. Runix es el producto." type=title
+  p "Cordlang es el lenguaje. Runix es el framework: SEO, HTML por ruta, runtime y deploy. No es un backend más del CLI de Cordlang." type=body muted
+  row gap=12 center
+    link "Documentación" to=/
+  p "Hoy `runix dev` usa el preview del lenguaje. El HTML por URL es Fase 2." muted

@@ -1,0 +1,13 @@
+theme app
+  primary: "#2563eb"
+  accent: "#0d9488"
+  bg: "#0b1220"
+  surface: "#121a2b"
+  text: "#e8eefc"
+  muted: "#9aa8c7"
+  border: "#243049"
+  radius: 16
+
+use layouts/default
+
+route / => pages/HomePage

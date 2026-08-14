@@ -1,0 +1,64 @@
+{
+  "name": "runix",
+  "version": "0.0.1-alpha.0",
+  "description": "Web framework on Cordlang — SEO, runtime, and deploy. Cordlang is the language; Runix is the product.",
+  "type": "module",
+  "bin": {
+    "runix": "npm/bin/runix.js"
+  },
+  "exports": {
+    ".": "./npm/lib/index.js",
+    "./package.json": "./package.json",
+    "./schema": "./schema/runix.schema.json"
+  },
+  "main": "./npm/lib/index.js",
+  "files": [
+    "npm/",
+    "templates/",
+    "schema/",
+    "docs/",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "runix": "node npm/bin/runix.js",
+    "test": "node tests/run_npm_cli.mjs",
+    "prepublishOnly": "node tests/run_npm_cli.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "keywords": [
+    "runix",
+    "cordlang",
+    "framework",
+    "ssg",
+    "ssr",
+    "seo",
+    "cord",
+    "web"
+  ],
+  "author": "owellandry (shimonikg)",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/cordlang/runix#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cordlang/runix.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cordlang/runix/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

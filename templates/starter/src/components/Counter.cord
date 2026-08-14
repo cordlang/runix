@@ -1,0 +1,10 @@
+def Counter
+  state count=0
+  props label: string = "Counter"
+
+  col gap=12 p=16 border rounded
+    h2 "#{label}" size=lg bold purpose=content
+    span "#{count}" size=4xl bold purpose=status
+    row gap=8
+      btn "-" @click=setCount(count - 1) variant=outline purpose=action
+      btn "+" @click=setCount(count + 1) variant=primary purpose=action importance=primary

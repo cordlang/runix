@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://runix.dev/schema/runix.schema.json",
+  "title": "runix.json",
+  "description": "Runix framework manifest. The language project still needs cordlang.json. No new .cord keywords live here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["framework"],
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "framework": { "const": "runix" },
+    "entry": {
+      "type": "string",
+      "default": "src/app.cord",
+      "description": "Same entry Cordlang uses (usually src/app.cord)."
+    },
+    "seo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "siteName": { "type": "string" },
+        "lang": { "type": "string" },
+        "description": { "type": "string" },
+        "canonical": { "type": "string", "format": "uri" }
+      }
+    },
+    "deploy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "adapter": {
+          "type": "string",
+          "enum": ["static", "node", "workers"],
+          "description": "Fase 7. Only static is planned first; others are reserved."
+        }
+      }
+    }
+  }
+}

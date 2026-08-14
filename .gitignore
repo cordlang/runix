@@ -1,0 +1,16 @@
+*.exe
+*.o
+*.obj
+*.ilk
+*.pdb
+*.out
+dist/
+.cache/
+tmp/
+tmp-test-app/
+runix-test-*/
+runixhex*/
+node_modules/
+*.tgz
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+title "About — Runix"
+
+col gap=16 max-w=640
+  h1 "Cordlang + Runix" size=2xl bold
+  p "Cordlang es el lenguaje (sintaxis 1.0, IR, check). Runix es el framework: SEO, HTML por ruta, runtime y deploy." muted
+  p "Hoy `runix dev` delega en el preview ESM de Cordlang. El HTML por URL llega en la Fase 2." muted
+  link "Volver" to=/

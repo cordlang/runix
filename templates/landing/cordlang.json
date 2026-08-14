@@ -1,0 +1,6 @@
+{
+  "name": "runix-landing",
+  "entry": "src/app.cord",
+  "title": "Runix",
+  "lang": "es"
+}

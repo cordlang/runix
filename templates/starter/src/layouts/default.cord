@@ -1,0 +1,12 @@
+layout default
+  header sticky bg=white shadow=sm
+    row between center p=16
+      span "Runix" bold color=primary
+      nav
+        row gap=16 center
+          link "Inicio" to=/
+          link "About" to=/about
+  main p=24
+    slot
+  footer p=16 muted
+    p "Built with Cordlang · Runix" center

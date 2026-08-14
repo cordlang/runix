@@ -1,0 +1,10 @@
+{
+  "name": "runix-landing",
+  "framework": "runix",
+  "entry": "src/app.cord",
+  "seo": {
+    "siteName": "Runix",
+    "lang": "es",
+    "description": "Framework web sobre Cordlang. Escribes .cord; Runix sirve el producto."
+  }
+}
