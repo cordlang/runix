@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { walkUp } from "./paths.js";
+import { walkUp } from "@/npm/lib/paths.js";
 
 function which(cmd) {
   const tool = process.platform === "win32" ? "where" : "which";

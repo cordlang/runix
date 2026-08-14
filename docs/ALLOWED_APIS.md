@@ -73,10 +73,10 @@ Runtime `$`: `state`, `effect`, `ref`, `resource`, `params`, `query`, `path`, `n
 
 ## Sources
 
-- `../cordlang/docs/SPEC.md`
-- `../cordlang/docs/IR.md`
-- `../cordlang/docs/PREVIEW.md`
-- `../cordlang/docs/RUNIX.md`
-- `../cordlang/docs/GUIDE.md`
-- `../cordlang/src/adapters/inbound/cli.c`
-- `../cordlang/src/domain/ir.h`
+- https://github.com/cordlang/cordlang/blob/master/docs/SPEC.md
+- https://github.com/cordlang/cordlang/blob/master/docs/IR.md
+- https://github.com/cordlang/cordlang/blob/master/docs/PREVIEW.md
+- https://github.com/cordlang/cordlang/blob/master/docs/RUNIX.md
+- https://github.com/cordlang/cordlang/blob/master/docs/GUIDE.md
+- https://github.com/cordlang/cordlang/blob/master/src/adapters/inbound/cli.c
+- https://github.com/cordlang/cordlang/blob/master/src/domain/ir.h

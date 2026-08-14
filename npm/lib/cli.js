@@ -1,11 +1,11 @@
-import { LANGUAGE, RUNIX_VERSION } from "./version.js";
-import { DEFAULT_NAME, DEFAULT_TEMPLATE, DIST_RUNIX } from "./project.js";
-import { doctor } from "./commands/doctor.js";
-import { initProject } from "./commands/init.js";
-import { checkProject } from "./commands/check.js";
-import { devProject } from "./commands/dev.js";
-import { buildProject } from "./commands/build.js";
-import { delegate } from "./commands/delegate.js";
+import { LANGUAGE, RUNIX_VERSION } from "@/npm/lib/version.js";
+import { DEFAULT_NAME, DEFAULT_TEMPLATE, DIST_RUNIX } from "@/npm/lib/project.js";
+import { doctor } from "@/npm/lib/commands/doctor.js";
+import { initProject } from "@/npm/lib/commands/init.js";
+import { checkProject } from "@/npm/lib/commands/check.js";
+import { devProject } from "@/npm/lib/commands/dev.js";
+import { buildProject } from "@/npm/lib/commands/build.js";
+import { delegate } from "@/npm/lib/commands/delegate.js";
 
 function usage() {
   console.log(`runix ${RUNIX_VERSION} — web framework on ${LANGUAGE}

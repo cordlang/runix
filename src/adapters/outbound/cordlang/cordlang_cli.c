@@ -30,6 +30,29 @@ static char *join_if_file(const char *dir, const char *rel) {
   return NULL;
 }
 
+/* From `start`, walk parents looking for sibling `cordlang/<bin>`. */
+static char *walk_find_cordlang(const char *start) {
+  char *cur = fs_norm_path(start);
+  if (!cur) return NULL;
+  for (int depth = 0; depth < 12; depth++) {
+    char *hit = join_if_file(cur, "cordlang/" CORD_BIN);
+    if (hit) {
+      free(cur);
+      return hit;
+    }
+    char *parent = fs_dirname(cur);
+    if (!parent) break;
+    if (strcmp(parent, cur) == 0) {
+      free(parent);
+      break;
+    }
+    free(cur);
+    cur = parent;
+  }
+  free(cur);
+  return NULL;
+}
+
 char *cordlang_find(void) {
   char *found = dup_if_file(getenv("RUNIX_CORDLANG"));
   if (found) return found;
@@ -40,34 +63,19 @@ char *cordlang_find(void) {
     return strdup(app);
 #endif
 
-  const char *rels[] = {
-      "../cordlang/" CORD_BIN,
-      "../../cordlang/" CORD_BIN,
-      NULL,
-  };
-
+  /* Walk up from exe / cwd looking for sibling checkout `cordlang/<bin>`. */
   char *exe_dir = fs_exe_dir();
   if (exe_dir) {
-    for (int i = 0; rels[i]; i++) {
-      found = join_if_file(exe_dir, rels[i]);
-      if (found) {
-        free(exe_dir);
-        return found;
-      }
-    }
+    found = walk_find_cordlang(exe_dir);
     free(exe_dir);
+    if (found) return found;
   }
 
   char *cwd = fs_cwd();
   if (cwd) {
-    for (int i = 0; rels[i]; i++) {
-      found = join_if_file(cwd, rels[i]);
-      if (found) {
-        free(cwd);
-        return found;
-      }
-    }
+    found = walk_find_cordlang(cwd);
     free(cwd);
+    if (found) return found;
   }
 
 #ifndef _WIN32

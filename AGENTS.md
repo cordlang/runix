@@ -2,7 +2,9 @@
 
 Runix is the **web framework** product. Cordlang is the **language**. Do not merge the two.
 
-Hexagonal layout matches `../cordlang` (micromodular services, ports, no I/O in `domain/`).
+Hexagonal layout matches the Cordlang language repo (micromodular services, ports, no I/O in `domain/`).
+
+JS imports use `@/` = this repo root (`jsconfig.json` + `npm/loader.mjs`). Never `../../`.
 
 ## Before any change
 

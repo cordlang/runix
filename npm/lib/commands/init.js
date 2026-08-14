@@ -1,7 +1,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { templateDir } from "../paths.js";
-import { projectNameOk, TEMPLATES } from "../project.js";
+import { templateDir } from "@/npm/lib/paths.js";
+import { projectNameOk, TEMPLATES } from "@/npm/lib/project.js";
 
 function dirEmpty(dir) {
   if (!existsSync(dir)) return true;

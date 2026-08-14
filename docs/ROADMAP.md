@@ -1,6 +1,6 @@
 # Runix — roadmap
 
-> Cordlang es el **lenguaje**. Runix es el **framework web**. Este archivo es el plan ejecutable del producto. La visión corta vive en [`../cordlang/docs/RUNIX.md`](../../cordlang/docs/RUNIX.md).
+> Cordlang es el **lenguaje**. Runix es el **framework web**. Este archivo es el plan ejecutable del producto. La visión corta vive en [cordlang/docs/RUNIX.md](https://github.com/cordlang/cordlang/blob/master/docs/RUNIX.md).
 
 ## Norte
 
@@ -92,7 +92,7 @@ runix init tmp-app && cd tmp-app && ..\runix.exe check
 
 Consume **`IrProgram` en proceso** (link del compilador Cordlang o un crate/wrapper estable). Por cada `IR_ROUTE`:
 
-1. Resolver layout (`layout=` → `default` → primer layout) — misma regla que [`PREVIEW.md`](../../cordlang/docs/PREVIEW.md).
+1. Resolver layout (`layout=` → `default` → primer layout) — misma regla que [PREVIEW.md](https://github.com/cordlang/cordlang/blob/master/docs/PREVIEW.md).
 2. Bajar IR a HTML estático (tags, texto, `#{…}` con datos conocidos en build).
 3. Escribir `dist/runix/<path>/index.html`.
 4. Adjuntar el runtime ESM de Cordlang para hidratar `state` / eventos.

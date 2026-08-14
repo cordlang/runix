@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { execCordlang, findCordlang } from "../cordlang.js";
-import { packageRoot, templateDir } from "../paths.js";
-import { DEFAULT_TEMPLATE, MANIFEST_CORD, MANIFEST_RUNIX } from "../project.js";
-import { LANGUAGE, RUNIX_VERSION } from "../version.js";
+import { execCordlang, findCordlang } from "@/npm/lib/cordlang.js";
+import { packageRoot, templateDir } from "@/npm/lib/paths.js";
+import { DEFAULT_TEMPLATE, MANIFEST_CORD, MANIFEST_RUNIX } from "@/npm/lib/project.js";
+import { LANGUAGE, RUNIX_VERSION } from "@/npm/lib/version.js";
 
 export function doctor() {
   console.log(`runix ${RUNIX_VERSION} (npm)`);

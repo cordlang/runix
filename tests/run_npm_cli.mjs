@@ -3,9 +3,9 @@ import { mkdtempSync, existsSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { runCli } from "../npm/lib/cli.js";
-import { RUNIX_VERSION } from "../npm/lib/version.js";
-import { projectNameOk } from "../npm/lib/project.js";
+import { runCli } from "@/npm/lib/cli.js";
+import { RUNIX_VERSION } from "@/npm/lib/version.js";
+import { projectNameOk } from "@/npm/lib/project.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 let failed = 0;

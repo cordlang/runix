@@ -3,7 +3,7 @@
 Two surfaces, one contract:
 
 1. **npm package (`npm/`)** — what ships to npmjs (`npx runix`). Prefer this for product work.
-2. **Native C CLI (`src/`)** — same Fase 1 commands; hexagonal cut like Cordlang (`../cordlang/docs/ARCHITECTURE.md`).
+2. **Native C CLI (`src/`)** — same Fase 1 commands; hexagonal cut like Cordlang ([ARCHITECTURE.md](https://github.com/cordlang/cordlang/blob/master/docs/ARCHITECTURE.md)).
 
 Do not re-parse `.cord` in either surface.
 
@@ -64,10 +64,10 @@ Do **not** put spawn/FS logic in the CLI. Do **not** add a `--backend runix` in 
 Fase 1                         Fase 2+
 ──────                         ───────
 cordlang_port (spawn)          still this repo; optionally link
-  check / run / build esm        ../cordlang IrProgram in-process
+  check / run / build esm        sibling Cordlang IrProgram in-process
 ```
 
-`cordlang_find()`: `RUNIX_CORDLANG` → `PATH` → sibling `../cordlang/cordlang[.exe]`.
+`cordlang_find()`: `RUNIX_CORDLANG` → `PATH` → walk up for sibling `cordlang/cordlang[.exe]`.
 
 ## What stays out of domain
 
@@ -79,7 +79,8 @@ cordlang_port (spawn)          still this repo; optionally link
 
 | Path | Role |
 |------|------|
-| `npm/bin/runix.js` | `bin.runix` |
+| `npm/bin/runix.js` | `bin.runix` — registers `@/` then loads `@/npm/lib/cli.js` |
+| `npm/loader.mjs` | `@/` → package root |
 | `npm/lib/cli.js` | argv → commands |
 | `npm/lib/cordlang.js` | find + spawn language CLI |
 | `npm/lib/commands/` | doctor / init / check / dev / build / delegate |

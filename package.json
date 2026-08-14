@@ -23,11 +23,11 @@
   ],
   "scripts": {
     "runix": "node npm/bin/runix.js",
-    "test": "node tests/run_npm_cli.mjs",
-    "prepublishOnly": "node tests/run_npm_cli.mjs"
+    "test": "node --import ./npm/register-alias.mjs tests/run_npm_cli.mjs",
+    "prepublishOnly": "node --import ./npm/register-alias.mjs tests/run_npm_cli.mjs"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.19"
   },
   "os": [
     "darwin",

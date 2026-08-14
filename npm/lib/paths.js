@@ -2,11 +2,16 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-
-/** Repo / package root (contains templates/, package.json). */
+/** Repo / package root (contains templates/, package.json). Walks up — no ../../. */
 export function packageRoot() {
-  return path.resolve(here, "..", "..");
+  let cur = path.dirname(fileURLToPath(import.meta.url));
+  for (let i = 0; i < 12; i++) {
+    if (existsSync(path.join(cur, "package.json"))) return cur;
+    const parent = path.dirname(cur);
+    if (parent === cur) break;
+    cur = parent;
+  }
+  throw new Error("runix: package.json not found from npm/lib");
 }
 
 export function templateDir(name) {

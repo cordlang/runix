@@ -53,7 +53,7 @@ Remove-Item -Recurse -Force (Join-Path $root $landName) -ErrorAction SilentlyCon
 Write-Host "ok init landing"
 
 if (Get-Command node -ErrorAction SilentlyContinue) {
-  & node "$root\tests\run_npm_cli.mjs"
+  & npm --prefix $root test
   if ($LASTEXITCODE -ne 0) { Fail "npm cli" }
 } else {
   Write-Host "skip npm cli (node not found)"
