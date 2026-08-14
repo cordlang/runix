@@ -5,7 +5,7 @@
 Escribes `.cord`. **Cordlang es el lenguaje** (sintaxis 1.0, IR, `check`, preview). **Runix es el framework**: SEO, HTML por ruta, runtime de producción y deploy. No es un `--backend` del CLI de Cordlang.
 
 ```
-npm create / npx runix init   →   .cord
+npx @cordlang/runix init   →   .cord
                                       │
                             cordlang check / IR
                                       │
@@ -16,18 +16,18 @@ npm create / npx runix init   →   .cord
 
 | Hoy (Fase 1, este paquete) | Destino (Fases 2–7) |
 |----------------------------|---------------------|
-| `npx runix init` / `dev` / `check` / `build` | HTML real por ruta, `<head>` de producto, datos de servidor, deploy |
+| `npx @cordlang/runix init` / `dev` / `check` / `build` | HTML real por ruta, `<head>` de producto, datos de servidor, deploy |
 | Preview = `cordlang run` | Runtime propio sobre el IR, no un wrap de Next/Kit |
 
 ## Install (npm)
 
 ```bash
-npm i -g runix
+npm i -g @cordlang/runix@alpha
 # or, no install:
-npx runix init mi-sitio
+npx @cordlang/runix@alpha init mi-sitio
 cd mi-sitio
-npx runix check
-npx runix dev
+npx @cordlang/runix check
+npx @cordlang/runix dev
 ```
 
 Requisito: el CLI de **Cordlang** en `PATH`, o `RUNIX_CORDLANG` apuntando al exe, o un clone hermano `../cordlang`. Runix no reparsea `.cord`.
@@ -49,13 +49,13 @@ El source de la app es **Cordlang 1.0**. No inventes JSX, `onClick`, `className`
 
 | Artefacto | Rol |
 |-----------|-----|
-| **`runix` en npm** | Superficie de producto (`npx runix`). Este es el paquete que se publica. |
+| **`@cordlang/runix` en npm** | Superficie de producto (`npx @cordlang/runix`). Este es el paquete que se publica. |
 | `runix.exe` (C) | Mismo contrato Fase 1, para quien compile este repo. Opcional. |
 
 La API pública Node:
 
 ```js
-import { runCli, findCordlang, RUNIX_VERSION } from "runix";
+import { runCli, findCordlang, RUNIX_VERSION } from "@cordlang/runix";
 ```
 
 Schema: [`schema/runix.schema.json`](./schema/runix.schema.json).
@@ -65,7 +65,7 @@ Schema: [`schema/runix.schema.json`](./schema/runix.schema.json).
 | | Cordlang | Runix |
 |---|----------|--------|
 | Qué | Lenguaje + compilador + IR + preview | Framework web opinado |
-| Repo | `cordlang/cordlang` | este (`cordlang/runix`) |
+| Repo | `cordlang/cordlang` | este (`@cordlang/runix` en npm) |
 | Owns | `.cord`, `check`, emit Official | SEO, SSG/SSR, runtime, hosting |
 | No es | Next / Vite / el framework | un `cordlang --backend runix` |
 

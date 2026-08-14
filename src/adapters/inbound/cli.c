@@ -24,7 +24,7 @@ static void print_usage(void) {
   printf("  runix --version | -v\n");
   printf("  runix help | --help | -h\n\n");
   printf("Language files are .cord (Cordlang 1.0). This CLI is the framework.\n");
-  printf("npm: npx runix …  —  See docs/NPM.md, docs/ROADMAP.md.\n");
+  printf("npm: npx @cordlang/runix …  —  See docs/NPM.md, docs/ROADMAP.md.\n");
 }
 
 int cli_run(int argc, char **argv) {

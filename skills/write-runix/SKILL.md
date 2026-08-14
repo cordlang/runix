@@ -44,8 +44,8 @@ SEO strings live here or in existing `title` / `head`. **Do not** invent a
 ## Commands
 
 ```bash
-npx runix init mi-sitio
-npx runix init land --template landing
+npx @cordlang/runix init mi-sitio
+npx @cordlang/runix init land --template landing
 runix check
 runix dev
 runix build

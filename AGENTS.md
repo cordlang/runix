@@ -34,7 +34,7 @@ JS imports use `@/` = this repo root (`jsconfig.json` + `npm/loader.mjs`). Never
 | `src/adapters/outbound/fs/` | Filesystem |
 | `src/adapters/outbound/process/` | `process_run` (Cordlang contract) |
 | `src/adapters/outbound/cordlang/` | Find + exec language CLI |
-| `npm/` | **Published** CLI + Node API (`npx runix`) |
+| `npm/` | **Published** CLI + Node API (`npx @cordlang/runix`) |
 | `templates/` | Runix starters (still `.cord`) |
 | `schema/` | `runix.json` JSON Schema |
 | `skills/write-runix/` | Portable AI skill |
@@ -48,4 +48,4 @@ build.bat
 powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 ```
 
-If Cordlang is available: `npx runix doctor` then `npx runix check` inside `templates/starter`.
+If Cordlang is available: `npx @cordlang/runix doctor` then `npx @cordlang/runix check` inside `templates/starter`.

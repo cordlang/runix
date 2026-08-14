@@ -30,4 +30,4 @@ Exit codes: `0` ok, `1` usage / missing cordlang / delegated command failed, `2`
 
 Environment: `RUNIX_CORDLANG` = absolute path to the Cordlang executable.
 
-npm entry: `npx runix` → `npm/bin/runix.js`. Native: `./runix` after `build.bat`.
+npm entry: `npx @cordlang/runix` → `npm/bin/runix.js`. Native: `./runix` after `build.bat`.

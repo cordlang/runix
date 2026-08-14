@@ -1,6 +1,6 @@
 # Publicar Runix en npmjs
 
-El paquete se llama **`runix`**. Es ESM, Node ≥ 18, **cero dependencias**.
+El paquete se llama **`@cordlang/runix`**. Es ESM, Node ≥ 18.19, **cero dependencias**. El binario CLI sigue siendo `runix`.
 
 ## Qué se publica
 
@@ -24,27 +24,25 @@ Comprueba que el tarball incluye `npm/bin/runix.js` y `templates/starter/src/app
 
 El `prepublishOnly` corre `npm test`.
 
-## Primera publicación
+## Publicar
 
-1. Cuenta npm con 2FA.
-2. Nombre: si `runix` está tomado, usar `@cordlang/runix` y ajustar `package.json` (`name` + `bin`).
-3. Repo GitHub: `cordlang/runix` (el `repository` del manifiesto ya apunta ahí).
-4. Tag alineado con la versión:
+Cuenta con acceso de owner a la org **`@cordlang`**. Tag de prerelease: `alpha`.
 
 ```bash
-npm login
 npm publish --access public --tag alpha
 ```
 
-Versión actual: `0.0.1-alpha.0` (prerelease). Sube a `0.0.1` cuando Fase 1 esté aburrida (doctor/init/check/dev/build estables).
+Versión actual: `0.0.1-alpha.0`. Sube a `0.0.1` (sin tag `alpha`) cuando Fase 1 esté aburrida.
 
 ## Después de publicar
 
 ```bash
-npx runix@alpha --version
-npx runix@alpha doctor
-npx runix@alpha init demo
+npx @cordlang/runix@alpha --version
+npx @cordlang/runix@alpha doctor
+npx @cordlang/runix@alpha init demo
 ```
+
+Tras `npm i -g @cordlang/runix@alpha` el comando global es `runix`.
 
 Los usuarios siguen necesitando **Cordlang** instalado (lenguaje). Este paquete no embebe el compilador.
 

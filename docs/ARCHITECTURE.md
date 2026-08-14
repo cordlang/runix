@@ -2,7 +2,7 @@
 
 Two surfaces, one contract:
 
-1. **npm package (`npm/`)** — what ships to npmjs (`npx runix`). Prefer this for product work.
+1. **npm package (`npm/`)** — what ships to npmjs (`npx @cordlang/runix`). Prefer this for product work.
 2. **Native C CLI (`src/`)** — same Fase 1 commands; hexagonal cut like Cordlang ([ARCHITECTURE.md](https://github.com/cordlang/cordlang/blob/master/docs/ARCHITECTURE.md)).
 
 Do not re-parse `.cord` in either surface.

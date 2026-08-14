@@ -2,7 +2,8 @@
 
 ## 0.0.1-alpha.0 — 2026-08-14
 
-- **Paquete npm `runix`** — `npx runix` (ESM, Node ≥ 18, cero deps). API `import { runCli } from "runix"`.
+- **Publicado en npmjs** como `@cordlang/runix` (`npm publish --tag alpha`).
+- **Paquete npm `@cordlang/runix`** — `npx @cordlang/runix` (ESM, Node ≥ 18, cero deps). API `import { runCli } from "@cordlang/runix"`.
 - **CLI Node = superficie de producto** — mismos comandos que el binario C; listo para npmjs (`docs/NPM.md`).
 - `init --template starter|landing`, aliases `create` / `new`.
 - `fmt` / `analyze` delegan en Cordlang (C + npm).

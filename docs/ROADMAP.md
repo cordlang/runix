@@ -32,7 +32,7 @@ src/**/*.cord
 | | Cordlang | Runix |
 |---|----------|--------|
 | Repo | `cordlang/cordlang` | `cordlangorg/runix` (este) |
-| Artefacto | `cordlang.exe` | paquete npm `runix` + `runix.exe` opcional |
+| Artefacto | `cordlang.exe` | paquete npm `@cordlang/runix` + `runix.exe` opcional |
 | Sintaxis | SPEC 1.0 (`.cord`) | no añade keywords al lenguaje |
 | Preview | `cordlang run` (ESM JIT, :4173) | `runix dev` (Fase 1 delega; luego runtime propio) |
 | Framework | no | sí: SEO, SSG/SSR, deploy |
@@ -58,7 +58,7 @@ Hallazgos que condicionan todo el plan:
 
 ## Phase 1 — CLI + contrato de proyecto  ← ahora (casi cerrado)
 
-**Qué:** CLI de producto **en npm** (`npx runix`) y binario nativo opcional. Un proyecto Runix **es** un proyecto Cordlang (`cordlang.json` + `src/**/*.cord`) más `runix.json`.
+**Qué:** CLI de producto **en npm** (`npx @cordlang/runix`) y binario nativo opcional. Un proyecto Runix **es** un proyecto Cordlang (`cordlang.json` + `src/**/*.cord`) más `runix.json`.
 
 | # | Entregable | Cómo | Estado |
 |---|------------|------|--------|
@@ -262,4 +262,4 @@ Cada PR debe citar `ALLOWED_APIS.md` y no añadir APIs no listadas.
 
 ---
 
-*Última actualización: 2026-08-14 — Fase 1 en npm (`npx runix`) + CLI C. Siguiente producto: Fase 2 SSG. Lenguaje: Cordlang 1.0. CLI Cordlang de referencia: 0.0.013.*
+*Última actualización: 2026-08-14 — Fase 1 en npm (`@cordlang/runix`) + CLI C. Siguiente producto: Fase 2 SSG. Lenguaje: Cordlang 1.0. CLI Cordlang de referencia: 0.0.013.*
